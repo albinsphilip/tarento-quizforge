@@ -6,28 +6,42 @@
 
 ## 🎯 NEW HERE? 
 
-# 👉 **[START_HERE.md](./START_HERE.md)** 👈
+### 🌟 **Backend Feels Complicated & Scattered?**
 
-**→ This is your entry point! Click above for a 5-minute guide.**
+# 👉 **[BACKEND_WORKFLOW_GUIDE.md](./BACKEND_WORKFLOW_GUIDE.md)** 👈
+**→ 30-minute guide: Understand HOW everything works together!**
+
+**You'll learn:**
+- ✅ Complete workflows (login, create quiz, take quiz)
+- ✅ How requests flow through the system
+- ✅ Visual diagrams showing connections
+- ✅ Why code is organized this way
+
+---
+
+### 📚 **Ready for Detailed Learning?**
+
+# 👉 **[START_HERE.md](./START_HERE.md)** 👈
+**→ 5-minute guide to choose your learning path**
 
 ---
 
 ## 📚 Quick Navigation
 
-### For Beginners
+### 😕 Backend Feels Scattered?
+**Read:** [BACKEND_WORKFLOW_GUIDE.md](./BACKEND_WORKFLOW_GUIDE.md) - Understand the big picture first!
+
+### 🆕 Complete Beginner?
 **Start:** [START_HERE.md](./START_HERE.md) → Follow "Path A"
 
-### For Intermediate Developers  
+### 💼 Intermediate Developer?
 **Start:** [START_HERE.md](./START_HERE.md) → Follow "Path B"
 
-### For Experts
-**Jump to:** [INDEX.md](./INDEX.md) → Use "Find By Topic"
+### 🚀 Expert?
+**Jump to:** [INDEX.md](./INDEX.md) → Find specific topics
 
----
-
-## 🗺️ Lost or Confused?
-
-**Visual Map:** [NAVIGATION.md](./NAVIGATION.md) - See how everything connects
+### 🗺️ Lost?
+**Check:** [NAVIGATION.md](./NAVIGATION.md) - Visual map of all files
 
 ---
 

@@ -4,10 +4,24 @@
 
 ---
 
+## 🌟 NEW: Feeling Overwhelmed?
+
+**👉 Read This First: [BACKEND_WORKFLOW_GUIDE.md](./BACKEND_WORKFLOW_GUIDE.md)** (30 minutes)
+
+**What you'll learn:**
+- ✅ How the entire system works (big picture)
+- ✅ Complete workflows from request to response
+- ✅ Visual diagrams and real examples
+- ✅ Why code is organized this way
+
+**Perfect for:** Understanding how everything fits together before diving into details
+
+---
+
 ## ⚡ Quick Start (Choose Your Path)
 
 ### 🆕 Complete Beginner to Spring Boot?
-**READ THIS FIRST:** [01_MODELS_LINE_BY_LINE.md](./01_MODELS_LINE_BY_LINE.md)
+**READ THIS FIRST:** [BACKEND_WORKFLOW_GUIDE.md](./BACKEND_WORKFLOW_GUIDE.md) then [01_MODELS_LINE_BY_LINE.md](./01_MODELS_LINE_BY_LINE.md)
 
 Then follow this order:
 1. ✅ Models → 2. DTOs → 3. Security → 4. Repositories
@@ -17,12 +31,14 @@ Then follow this order:
 ---
 
 ### 💼 Know Spring Boot Already?
-**READ THIS FIRST:** [SERVICE_PACKAGE_COMPLETE.md](./SERVICE_PACKAGE_COMPLETE.md)
+**START WITH:** [BACKEND_WORKFLOW_GUIDE.md](./BACKEND_WORKFLOW_GUIDE.md) (30 min) for project-specific workflows
+
+**THEN READ:** [SERVICE_PACKAGE_COMPLETE.md](./SERVICE_PACKAGE_COMPLETE.md)
 
 Then check:
 1. ✅ Services → 2. Controllers → 3. Security details
 
-**Total Time:** 3-4 hours
+**Total Time:** 4 hours
 
 ---
 
