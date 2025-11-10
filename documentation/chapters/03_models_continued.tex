@@ -1,0 +1,487 @@
+% Chapter 3 Continued: Models (Part 2)
+
+\section{Question Entity}
+
+\subsection{Purpose}
+The \texttt{Question} entity represents individual questions within a quiz. Supports multiple question types including multiple-choice, true/false, and short answer.
+
+\subsection{Complete Source Code}
+
+\begin{lstlisting}[caption=Question.java - Complete Implementation]
+package com.quizforge.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = ''questions'')
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Question {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = ''quiz_id'', nullable = false)
+    private Quiz quiz;
+
+    @Column(nullable = false, columnDefinition = ''TEXT'')
+    private String questionText;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private QuestionType type;
+
+    @Column(nullable = false)
+    private Integer points = 1;
+
+    @OneToMany(mappedBy = ''question'', cascade = CascadeType.ALL, 
+               orphanRemoval = true)
+    private List<Option> options = new ArrayList<>();
+
+    public enum QuestionType {
+        MULTIPLE_CHOICE, TRUE_FALSE, SHORT_ANSWER
+    }
+}
+\end{lstlisting}
+
+\subsection{Line-by-Line Explanation}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Line 21-23: Quiz Relationship}
+    \begin{itemize}
+        \item \texttt{@ManyToOne}: Many questions belong to one quiz
+        \item \texttt{LAZY} fetch: Quiz loaded only when accessed
+        \item \texttt{quiz\_id}: Foreign key column in database
+        \item Question cannot exist without a quiz (nullable = false)
+    \end{itemize}
+    
+    \item \textbf{Line 25-26: QuestionText Field}
+    \begin{itemize}
+        \item Stores the actual question text
+        \item TEXT type for long questions
+        \item Required field
+    \end{itemize}
+    
+    \item \textbf{Line 28-30: Type Field (Enum)}
+    \begin{itemize}
+        \item \texttt{MULTIPLE\_CHOICE}: Question with multiple options, one correct
+        \item \texttt{TRUE\_FALSE}: Binary question with two options
+        \item \texttt{SHORT\_ANSWER}: Text-based answer (manual grading)
+        \item Stored as string in database for readability
+    \end{itemize}
+    
+    \item \textbf{Line 32-33: Points Field}
+    \begin{itemize}
+        \item Score value for this question
+        \item Defaults to 1 point
+        \item Used in calculating total quiz score
+        \item Can be customized per question
+    \end{itemize}
+    
+    \item \textbf{Line 35-37: Options Relationship}
+    \begin{itemize}
+        \item \texttt{@OneToMany}: One question has many options
+        \item \texttt{mappedBy = ''question''}: Bidirectional relationship
+        \item \texttt{CascadeType.ALL}: All operations cascade to options
+        \item \texttt{orphanRemoval}: Delete options if removed from list
+        \item Multiple choice questions typically have 4-5 options
+    \end{itemize}
+    
+    \item \textbf{Line 39-41: QuestionType Enum}
+    \begin{itemize}
+        \item Defines three supported question types
+        \item Extensible for future question types
+        \item Influences validation logic in frontend
+    \end{itemize}
+\end{itemize}
+
+\subsection{Database Table Structure}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Column} & \textbf{Type} & \textbf{Constraints} & \textbf{Description} \\
+\hline
+id & BIGSERIAL & PRIMARY KEY & Auto-increment ID \\
+quiz\_id & BIGINT & NOT NULL, FK & Parent quiz ID \\
+question\_text & TEXT & NOT NULL & Question content \\
+type & VARCHAR(50) & NOT NULL & Question type \\
+points & INTEGER & NOT NULL & Point value \\
+\hline
+\end{tabular}
+\caption{Questions Table Structure}
+\end{table}
+
+\section{Option Entity}
+
+\subsection{Purpose}
+The \texttt{Option} entity represents answer choices for multiple-choice and true/false questions.
+
+\subsection{Complete Source Code}
+
+\begin{lstlisting}[caption=Option.java - Complete Implementation]
+package com.quizforge.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = ''options'')
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Option {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = ''question_id'', nullable = false)
+    private Question question;
+
+    @Column(nullable = false)
+    private String optionText;
+
+    @Column(nullable = false)
+    private Boolean isCorrect = false;
+}
+\end{lstlisting}
+
+\subsection{Line-by-Line Explanation}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Line 18-20: Question Relationship}
+    \begin{itemize}
+        \item \texttt{@ManyToOne}: Many options belong to one question
+        \item LAZY loading for performance
+        \item Required relationship (nullable = false)
+    \end{itemize}
+    
+    \item \textbf{Line 22-23: OptionText Field}
+    \begin{itemize}
+        \item The text of the answer choice
+        \item Required field
+        \item Displayed to candidates during quiz
+    \end{itemize}
+    
+    \item \textbf{Line 25-26: IsCorrect Field}
+    \begin{itemize}
+        \item Boolean flag indicating correct answer
+        \item Defaults to false
+        \item Only one option should be true for MULTIPLE\_CHOICE
+        \item Used for automatic grading
+        \item Hidden from candidates during quiz taking
+    \end{itemize}
+\end{itemize}
+
+\subsection{Database Table Structure}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Column} & \textbf{Type} & \textbf{Constraints} & \textbf{Description} \\
+\hline
+id & BIGSERIAL & PRIMARY KEY & Auto-increment ID \\
+question\_id & BIGINT & NOT NULL, FK & Parent question ID \\
+option\_text & VARCHAR(255) & NOT NULL & Answer choice text \\
+is\_correct & BOOLEAN & NOT NULL & Correct answer flag \\
+\hline
+\end{tabular}
+\caption{Options Table Structure}
+\end{table}
+
+\section{QuizAttempt Entity}
+
+\subsection{Purpose}
+The \texttt{QuizAttempt} entity tracks when a candidate takes a quiz, storing timing, score, and status information.
+
+\subsection{Complete Source Code}
+
+\begin{lstlisting}[caption=QuizAttempt.java - Complete Implementation]
+package com.quizforge.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = ''quiz_attempts'')
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class QuizAttempt {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = ''quiz_id'', nullable = false)
+    private Quiz quiz;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = ''user_id'', nullable = false)
+    private User user;
+
+    @Column(name = ''started_at'', nullable = false)
+    private LocalDateTime startedAt;
+
+    @Column(name = ''submitted_at'')
+    private LocalDateTime submittedAt;
+
+    @Column(name = ''score'')
+    private Integer score;
+
+    @Column(name = ''total_points'')
+    private Integer totalPoints;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AttemptStatus status = AttemptStatus.IN_PROGRESS;
+
+    @OneToMany(mappedBy = ''attempt'', cascade = CascadeType.ALL, 
+               orphanRemoval = true)
+    private List<Answer> answers = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        if (startedAt == null) {
+            startedAt = LocalDateTime.now();
+        }
+    }
+
+    public enum AttemptStatus {
+        IN_PROGRESS, SUBMITTED, EVALUATED
+    }
+}
+\end{lstlisting}
+
+\subsection{Line-by-Line Explanation}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Line 22-24: Quiz Relationship}
+    \begin{itemize}
+        \item Links attempt to specific quiz
+        \item One quiz can have many attempts
+        \item LAZY loading for performance
+    \end{itemize}
+    
+    \item \textbf{Line 26-28: User Relationship}
+    \begin{itemize}
+        \item Links attempt to candidate user
+        \item One user can have many attempts
+        \item Tracks who took the quiz
+    \end{itemize}
+    
+    \item \textbf{Line 30-31: StartedAt Timestamp}
+    \begin{itemize}
+        \item Records when quiz attempt began
+        \item Required field
+        \item Used to calculate time remaining
+    \end{itemize}
+    
+    \item \textbf{Line 33-34: SubmittedAt Timestamp}
+    \begin{itemize}
+        \item Records when candidate submitted answers
+        \item Optional (null while in progress)
+        \item Used to verify submission within time limit
+    \end{itemize}
+    
+    \item \textbf{Line 36-37: Score Field}
+    \begin{itemize}
+        \item Points earned by candidate
+        \item Null until quiz is evaluated
+        \item Calculated by comparing answers with correct options
+    \end{itemize}
+    
+    \item \textbf{Line 39-40: TotalPoints Field}
+    \begin{itemize}
+        \item Maximum possible score
+        \item Sum of all question points
+        \item Set when attempt is created
+    \end{itemize}
+    
+    \item \textbf{Line 42-44: Status Field (Enum)}
+    \begin{itemize}
+        \item \texttt{IN\_PROGRESS}: Quiz started but not submitted
+        \item \texttt{SUBMITTED}: Answers submitted, awaiting evaluation
+        \item \texttt{EVALUATED}: Graded and score calculated
+        \item Defaults to IN\_PROGRESS
+    \end{itemize}
+    
+    \item \textbf{Line 46-48: Answers Relationship}
+    \begin{itemize}
+        \item One attempt has many answers
+        \item Each answer corresponds to one question
+        \item CASCADE operations ensure consistency
+    \end{itemize}
+    
+    \item \textbf{Line 50-55: @PrePersist Callback}
+    \begin{itemize}
+        \item Sets startedAt if not already set
+        \item Ensures attempt has start timestamp
+        \item Only sets if null (allows manual override)
+    \end{itemize}
+    
+    \item \textbf{Line 57-59: AttemptStatus Enum}
+    \begin{itemize}
+        \item Three-stage lifecycle
+        \item Prevents duplicate submissions
+        \item Used in queries to filter attempts
+    \end{itemize}
+\end{itemize}
+
+\subsection{Database Table Structure}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Column} & \textbf{Type} & \textbf{Constraints} & \textbf{Description} \\
+\hline
+id & BIGSERIAL & PRIMARY KEY & Auto-increment ID \\
+quiz\_id & BIGINT & NOT NULL, FK & Quiz reference \\
+user\_id & BIGINT & NOT NULL, FK & Candidate reference \\
+started\_at & TIMESTAMP & NOT NULL & Start time \\
+submitted\_at & TIMESTAMP & NULL & Submission time \\
+score & INTEGER & NULL & Points earned \\
+total\_points & INTEGER & NULL & Max possible score \\
+status & VARCHAR(50) & NOT NULL & Attempt status \\
+\hline
+\end{tabular}
+\caption{Quiz Attempts Table Structure}
+\end{table}
+
+\section{Answer Entity}
+
+\subsection{Purpose}
+The \texttt{Answer} entity stores candidate responses to individual questions, along with grading results.
+
+\subsection{Complete Source Code}
+
+\begin{lstlisting}[caption=Answer.java - Complete Implementation]
+package com.quizforge.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = ''answers'')
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Answer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = ''attempt_id'', nullable = false)
+    private QuizAttempt attempt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = ''question_id'', nullable = false)
+    private Question question;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = ''selected_option_id'')
+    private Option selectedOption;
+
+    @Column(columnDefinition = ''TEXT'')
+    private String textAnswer;
+
+    @Column(nullable = false)
+    private Boolean isCorrect = false;
+
+    @Column
+    private Integer pointsEarned = 0;
+}
+\end{lstlisting}
+
+\subsection{Line-by-Line Explanation}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Line 18-20: Attempt Relationship}
+    \begin{itemize}
+        \item Links answer to quiz attempt
+        \item Many answers per attempt
+        \item Required relationship
+    \end{itemize}
+    
+    \item \textbf{Line 22-24: Question Relationship}
+    \begin{itemize}
+        \item Links answer to specific question
+        \item Each answer corresponds to one question
+        \item Required to know what was answered
+    \end{itemize}
+    
+    \item \textbf{Line 26-28: SelectedOption Relationship}
+    \begin{itemize}
+        \item For multiple-choice/true-false questions
+        \item References chosen option
+        \item Optional (nullable) - not used for SHORT\_ANSWER
+    \end{itemize}
+    
+    \item \textbf{Line 30-31: TextAnswer Field}
+    \begin{itemize}
+        \item For SHORT\_ANSWER question type
+        \item Stores text response
+        \item Optional (null for multiple choice)
+        \item Requires manual grading
+    \end{itemize}
+    
+    \item \textbf{Line 33-34: IsCorrect Field}
+    \begin{itemize}
+        \item Boolean flag for answer correctness
+        \item Defaults to false
+        \item Automatically set for multiple-choice
+        \item Must be manually set for short answers
+    \end{itemize}
+    
+    \item \textbf{Line 36-37: PointsEarned Field}
+    \begin{itemize}
+        \item Points awarded for this answer
+        \item 0 for incorrect answers
+        \item Equal to question.points for correct answers
+        \item Used in calculating total score
+    \end{itemize}
+\end{itemize}
+
+\subsection{Database Table Structure}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Column} & \textbf{Type} & \textbf{Constraints} & \textbf{Description} \\
+\hline
+id & BIGSERIAL & PRIMARY KEY & Auto-increment ID \\
+attempt\_id & BIGINT & NOT NULL, FK & Attempt reference \\
+question\_id & BIGINT & NOT NULL, FK & Question reference \\
+selected\_option\_id & BIGINT & NULL, FK & Selected option \\
+text\_answer & TEXT & NULL & Text response \\
+is\_correct & BOOLEAN & NOT NULL & Correctness flag \\
+points\_earned & INTEGER & NULL & Points awarded \\
+\hline
+\end{tabular}
+\caption{Answers Table Structure}
+\end{table}
+

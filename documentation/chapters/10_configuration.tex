@@ -1,0 +1,370 @@
+% Chapter 10: Configuration
+\chapter{Application Configuration}
+
+\section{application.properties}
+
+\subsection{Complete Configuration File}
+
+\begin{lstlisting}[caption=application.properties]
+# Server Configuration
+server.port=8080
+
+# Database Configuration
+spring.datasource.url=jdbc:postgresql://localhost:5432/quizforge_db
+spring.datasource.username=quizforge_user
+spring.datasource.password=quizforge_pass
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA Configuration
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.format_sql=true
+
+# JWT Configuration
+jwt.secret=YourSuperSecretKeyForJWTTokenGenerationMustBeLongEnoughForHS512Algorithm
+jwt.expiration=86400000
+
+# Swagger/OpenAPI Configuration
+springdoc.api-docs.enabled=true
+springdoc.swagger-ui.enabled=true
+springdoc.api-docs.path=/v3/api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
+springdoc.swagger-ui.operationsSorter=method
+springdoc.swagger-ui.tagsSorter=alpha
+springdoc.swagger-ui.disable-swagger-default-url=true
+
+# CORS Configuration
+cors.allowed-origins=http://localhost:5173
+\end{lstlisting}
+
+\section{Configuration Sections Explained}
+
+\subsection{Server Configuration}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Property} & \textbf{Value} & \textbf{Description} \\
+\hline
+server.port & 8080 & HTTP port for application \\
+\hline
+\end{tabular}
+\caption{Server Configuration}
+\end{table}
+
+\textbf{Notes:}
+\begin{itemize}
+    \item Default Spring Boot port
+    \item Can be changed for multiple instances
+    \item Use environment variable: \texttt{SERVER\_PORT=9090}
+\end{itemize}
+
+\subsection{Database Configuration}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Property} & \textbf{Description} \\
+\hline
+spring.datasource.url & JDBC URL for PostgreSQL database. Format: jdbc:postgresql://host:port/database \\
+\hline
+spring.datasource.username & Database user with appropriate permissions \\
+\hline
+spring.datasource.password & Database password (should be externalized in production) \\
+\hline
+spring.datasource.driver-class-name & PostgreSQL JDBC driver class \\
+\hline
+\end{tabular}
+\caption{Database Configuration}
+\end{table}
+
+\textbf{Database Setup Script:}
+\begin{lstlisting}[language=bash]
+# Create database and user
+sudo -u postgres psql
+CREATE DATABASE quizforge_db;
+CREATE USER quizforge_user WITH PASSWORD 'quizforge_pass';
+GRANT ALL PRIVILEGES ON DATABASE quizforge_db TO quizforge_user;
+\end{lstlisting}
+
+\subsection{JPA Configuration}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Property} & \textbf{Description} \\
+\hline
+spring.jpa.hibernate.ddl-auto & \textbf{update}: Automatically update schema based on entities. Options: none, validate, update, create, create-drop \\
+\hline
+spring.jpa.show-sql & \textbf{true}: Log SQL queries to console (useful for development) \\
+\hline
+spring.jpa.properties.hibernate.dialect & PostgreSQL-specific SQL dialect \\
+\hline
+spring.jpa.properties.hibernate.format\_sql & \textbf{true}: Pretty-print SQL for readability \\
+\hline
+\end{tabular}
+\caption{JPA Configuration}
+\end{table}
+
+\textbf{DDL-Auto Options:}
+\begin{itemize}
+    \item \textbf{none}: No schema management
+    \item \textbf{validate}: Validate schema matches entities (production)
+    \item \textbf{update}: Update schema (development)
+    \item \textbf{create}: Drop and recreate schema (testing)
+    \item \textbf{create-drop}: Drop schema on shutdown (testing)
+\end{itemize}
+
+\textbf{Production Recommendation:}
+\begin{lstlisting}
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=false
+\end{lstlisting}
+
+\subsection{JWT Configuration}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Property} & \textbf{Description} \\
+\hline
+jwt.secret & Secret key for signing JWT tokens. Must be long enough for HS512 (at least 512 bits / 64 bytes). Should be stored securely in production. \\
+\hline
+jwt.expiration & Token expiration time in milliseconds. 86400000 ms = 24 hours. \\
+\hline
+\end{tabular}
+\caption{JWT Configuration}
+\end{table}
+
+\textbf{Security Best Practices:}
+\begin{itemize}
+    \item Generate strong random secret: \texttt{openssl rand -base64 64}
+    \item Store in environment variable or secret manager
+    \item Rotate secrets periodically
+    \item Use different secrets for different environments
+\end{itemize}
+
+\textbf{Expiration Time Examples:}
+\begin{lstlisting}
+15 minutes  = 900000
+1 hour      = 3600000
+24 hours    = 86400000
+7 days      = 604800000
+\end{lstlisting}
+
+\subsection{Swagger/OpenAPI Configuration}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Property} & \textbf{Description} \\
+\hline
+springdoc.api-docs.enabled & Enable OpenAPI JSON generation \\
+\hline
+springdoc.swagger-ui.enabled & Enable Swagger UI web interface \\
+\hline
+springdoc.api-docs.path & URL path for OpenAPI JSON \\
+\hline
+springdoc.swagger-ui.path & URL path for Swagger UI \\
+\hline
+springdoc.swagger-ui.operationsSorter & Sort operations by HTTP method \\
+\hline
+springdoc.swagger-ui.tagsSorter & Sort tags alphabetically \\
+\hline
+springdoc.swagger-ui.disable-swagger-default-url & Disable default Swagger URL \\
+\hline
+\end{tabular}
+\caption{Swagger Configuration}
+\end{table}
+
+\textbf{Access URLs:}
+\begin{itemize}
+    \item Swagger UI: \texttt{http://localhost:8080/swagger-ui.html}
+    \item OpenAPI JSON: \texttt{http://localhost:8080/v3/api-docs}
+\end{itemize}
+
+\textbf{Production Consideration:}
+Disable Swagger in production or protect with authentication:
+\begin{lstlisting}
+springdoc.swagger-ui.enabled=false  # Production
+\end{lstlisting}
+
+\subsection{CORS Configuration}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Property} & \textbf{Description} \\
+\hline
+cors.allowed-origins & Comma-separated list of allowed origin URLs for CORS. Frontend application URL. \\
+\hline
+\end{tabular}
+\caption{CORS Configuration}
+\end{table}
+
+\textbf{Multiple Origins Example:}
+\begin{lstlisting}
+cors.allowed-origins=http://localhost:5173,http://localhost:3000,https://quizforge.com
+\end{lstlisting}
+
+\section{Maven Configuration (pom.xml)}
+
+\subsection{Project Information}
+
+\begin{lstlisting}[language=XML]
+<groupId>com.quizforge</groupId>
+<artifactId>quizforge</artifactId>
+<version>1.0.0</version>
+<name>QuizForge</name>
+<description>Online Quiz Platform</description>
+\end{lstlisting}
+
+\subsection{Java Version}
+
+\begin{lstlisting}[language=XML]
+<properties>
+    <java.version>21</java.version>
+    <springdoc.version>2.6.0</springdoc.version>
+</properties>
+\end{lstlisting}
+
+\textbf{Java 21 Features Used:}
+\begin{itemize}
+    \item Record classes (DTOs)
+    \item Pattern matching
+    \item Switch expressions
+    \item Text blocks
+    \item Improved garbage collection
+\end{itemize}
+
+\subsection{Parent POM}
+
+\begin{lstlisting}[language=XML]
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.2.0</version>
+    <relativePath/>
+</parent>
+\end{lstlisting}
+
+Benefits:
+\begin{itemize}
+    \item Dependency management
+    \item Default plugin configuration
+    \item Common Spring Boot defaults
+\end{itemize}
+
+\section{Environment-Specific Configuration}
+
+\subsection{Profile-Based Configuration}
+
+Spring supports multiple profiles:
+
+\textbf{application-dev.properties:}
+\begin{lstlisting}
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=update
+\end{lstlisting}
+
+\textbf{application-prod.properties:}
+\begin{lstlisting}
+spring.jpa.show-sql=false
+spring.jpa.hibernate.ddl-auto=validate
+springdoc.swagger-ui.enabled=false
+\end{lstlisting}
+
+\textbf{Activation:}
+\begin{lstlisting}[language=bash]
+# Command line
+java -jar app.jar --spring.profiles.active=prod
+
+# Environment variable
+export SPRING_PROFILES_ACTIVE=prod
+\end{lstlisting}
+
+\subsection{External Configuration}
+
+For production, externalize sensitive configuration:
+
+\textbf{Using Environment Variables:}
+\begin{lstlisting}
+spring.datasource.url=${DB_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+jwt.secret=${JWT_SECRET}
+\end{lstlisting}
+
+\textbf{Using External application.properties:}
+\begin{lstlisting}[language=bash]
+java -jar app.jar --spring.config.location=/etc/quizforge/application.properties
+\end{lstlisting}
+
+\section{Database Migration Tools}
+
+For production, consider using migration tools:
+
+\subsection{Flyway Configuration}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>org.flywaydb</groupId>
+    <artifactId>flyway-core</artifactId>
+</dependency>
+\end{lstlisting}
+
+\begin{lstlisting}
+spring.flyway.enabled=true
+spring.flyway.locations=classpath:db/migration
+\end{lstlisting}
+
+\subsection{Liquibase Configuration}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>org.liquibase</groupId>
+    <artifactId>liquibase-core</artifactId>
+</dependency>
+\end{lstlisting}
+
+\begin{lstlisting}
+spring.liquibase.change-log=classpath:db/changelog/db.changelog-master.xml
+\end{lstlisting}
+
+\section{Logging Configuration}
+
+\subsection{Logging Levels}
+
+\begin{lstlisting}
+# Root logging level
+logging.level.root=INFO
+
+# Package-specific logging
+logging.level.com.quizforge=DEBUG
+logging.level.org.springframework.security=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+
+# Log to file
+logging.file.name=logs/quizforge.log
+logging.file.max-size=10MB
+logging.file.max-history=30
+\end{lstlisting}
+
+\subsection{Log Format}
+
+\begin{lstlisting}
+logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %msg%n
+logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+\end{lstlisting}
+

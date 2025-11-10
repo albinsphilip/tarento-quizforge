@@ -1,0 +1,298 @@
+% Chapter 5 Continued: Services (Part 2)
+
+\subsection{Method: createQuiz (Part 5 - Persistence)}
+
+\begin{lstlisting}[caption=Create Quiz - Save and Return]
+    quiz = quizRepository.save(quiz);
+    return toDetailedResponse(quiz);
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{save()}: Persists quiz to database
+    \item \texttt{CascadeType.ALL}: Automatically saves all questions and options
+    \item JPA assigns IDs to all entities
+    \item Converts saved entity to DTO for response
+\end{itemize}
+
+\subsection{Method: updateQuiz}
+
+\begin{lstlisting}[caption=Update Quiz Method]
+@Transactional
+public QuizResponse updateQuiz(Long id, QuizRequest request) {
+    Quiz quiz = quizRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException(
+                ''Quiz not found''));
+
+    quiz.setTitle(request.title());
+    quiz.setDescription(request.description());
+    quiz.setDuration(request.duration());
+    if (request.isActive() != null) {
+        quiz.setIsActive(request.isActive());
+    }
+
+    // Clear existing questions and add new ones
+    quiz.getQuestions().clear();
+    
+    // ... (same question/option creation logic as createQuiz)
+    
+    quiz = quizRepository.save(quiz);
+    return toDetailedResponse(quiz);
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Fetches existing quiz by ID
+    \item Updates basic properties
+    \item Clears existing questions (orphanRemoval deletes them)
+    \item Recreates questions from request
+    \item Saves updated quiz
+    \item @PreUpdate callback sets updatedAt timestamp
+\end{itemize}
+
+\subsection{Method: deleteQuiz}
+
+\begin{lstlisting}[caption=Delete Quiz Method]
+public void deleteQuiz(Long id) {
+    quizRepository.deleteById(id);
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Simple delegation to repository
+    \item Cascade operations delete associated questions and options
+    \item May fail if quiz has attempts (referential integrity)
+    \item Production would handle/prevent deletion of used quizzes
+\end{itemize}
+
+\subsection{Method: getQuizAnalytics}
+
+\begin{lstlisting}[caption=Get Quiz Analytics Method]
+public QuizAnalyticsResponse getQuizAnalytics(Long quizId) {
+    Quiz quiz = quizRepository.findById(quizId)
+            .orElseThrow(() -> new RuntimeException(
+                ''Quiz not found''));
+
+    List<QuizAttempt> attempts = attemptRepository
+            .findByQuizId(quizId).stream()
+            .filter(a -> a.getStatus() == 
+                QuizAttempt.AttemptStatus.EVALUATED)
+            .collect(Collectors.toList());
+
+    if (attempts.isEmpty()) {
+        return new QuizAnalyticsResponse(quizId, quiz.getTitle(), 
+            0, 0.0, 0, 0);
+    }
+
+    int totalAttempts = attempts.size();
+    double averageScore = attempts.stream()
+            .mapToInt(QuizAttempt::getScore)
+            .average()
+            .orElse(0.0);
+    int highestScore = attempts.stream()
+            .mapToInt(QuizAttempt::getScore)
+            .max()
+            .orElse(0);
+    int lowestScore = attempts.stream()
+            .mapToInt(QuizAttempt::getScore)
+            .min()
+            .orElse(0);
+
+    return new QuizAnalyticsResponse(quizId, quiz.getTitle(), 
+        totalAttempts, averageScore, highestScore, lowestScore);
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Retrieves quiz and all evaluated attempts
+    \item Filters for EVALUATED status only
+    \item Returns zero statistics if no attempts
+    \item Calculates: total attempts, average score, highest, lowest
+    \item Uses Java Stream API for calculations
+\end{itemize}
+
+\subsection{Helper Method: toSummaryResponse}
+
+\begin{lstlisting}[caption=Entity to Summary DTO Conversion]
+private QuizSummaryResponse toSummaryResponse(Quiz quiz) {
+    return new QuizSummaryResponse(
+            quiz.getId(),
+            quiz.getTitle(),
+            quiz.getDescription(),
+            quiz.getDuration(),
+            quiz.getIsActive(),
+            quiz.getCreatedBy().getName(),
+            quiz.getCreatedAt(),
+            quiz.getQuestions().size()
+    );
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Converts Quiz entity to QuizSummaryResponse DTO
+    \item Extracts only summary information
+    \item Does not include full question details
+    \item Used for list views
+\end{itemize}
+
+\subsection{Helper Method: toDetailedResponse}
+
+\begin{lstlisting}[caption=Entity to Detailed DTO Conversion]
+private QuizResponse toDetailedResponse(Quiz quiz) {
+    List<QuestionResponse> questions = quiz.getQuestions()
+        .stream()
+        .map(q -> new QuestionResponse(
+                q.getId(),
+                q.getQuestionText(),
+                q.getType().name(),
+                q.getPoints(),
+                q.getOptions().stream()
+                        .map(o -> new OptionResponse(
+                            o.getId(), 
+                            o.getOptionText(), 
+                            o.getIsCorrect()))
+                        .collect(Collectors.toList())
+        ))
+        .collect(Collectors.toList());
+
+    return new QuizResponse(
+            quiz.getId(),
+            quiz.getTitle(),
+            quiz.getDescription(),
+            quiz.getDuration(),
+            quiz.getIsActive(),
+            quiz.getCreatedBy().getName(),
+            quiz.getCreatedAt(),
+            quiz.getUpdatedAt(),
+            questions
+    );
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Converts Quiz entity to complete QuizResponse DTO
+    \item Includes all questions and options
+    \item Shows correct answers (admin view)
+    \item Nested stream operations for questions and options
+\end{itemize}
+
+\section{CandidateService}
+
+\subsection{Purpose}
+Handles quiz-taking operations for candidates including starting quizzes, submitting answers, and viewing results.
+
+\subsection{Method: getAvailableQuizzes}
+
+\begin{lstlisting}[caption=Get Available Quizzes]
+public List<QuizSummaryResponse> getAvailableQuizzes() {
+    return quizRepository.findByIsActiveTrue().stream()
+            .map(this::toSummaryResponse)
+            .collect(Collectors.toList());
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Returns only active quizzes
+    \item Uses custom repository method
+    \item Summary format (no questions yet)
+\end{itemize}
+
+\subsection{Method: startQuiz}
+
+\begin{lstlisting}[caption=Start Quiz Method]
+@Transactional
+public AttemptResponse startQuiz(Long quizId, 
+                                String candidateEmail) {
+    Quiz quiz = quizRepository.findById(quizId)
+            .orElseThrow(() -> new RuntimeException(
+                ''Quiz not found''));
+
+    User candidate = userRepository.findByEmail(candidateEmail)
+            .orElseGet(() -> {
+                User newCandidate = new User();
+                newCandidate.setEmail(candidateEmail);
+                newCandidate.setName(''Candidate'');
+                newCandidate.setPassword(''dummy'');
+                newCandidate.setRole(User.Role.CANDIDATE);
+                return userRepository.save(newCandidate);
+            });
+
+    QuizAttempt attempt = new QuizAttempt();
+    attempt.setQuiz(quiz);
+    attempt.setUser(candidate);
+    attempt.setStartedAt(LocalDateTime.now());
+    attempt.setStatus(QuizAttempt.AttemptStatus.IN_PROGRESS);
+    attempt.setTotalPoints(quiz.getQuestions().stream()
+            .mapToInt(Question::getPoints)
+            .sum());
+
+    attempt = attemptRepository.save(attempt);
+    return toAttemptResponse(attempt);
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Creates new QuizAttempt record
+    \item Links to quiz and candidate user
+    \item Sets start time and IN\_PROGRESS status
+    \item Calculates total possible points
+    \item Returns attempt ID for submission
+\end{itemize}
+
+\subsection{Method: getQuizForAttempt}
+
+\begin{lstlisting}[caption=Get Quiz for Taking]
+public QuizResponse getQuizForAttempt(Long quizId) {
+    Quiz quiz = quizRepository.findById(quizId)
+            .orElseThrow(() -> new RuntimeException(
+                ''Quiz not found''));
+    return toQuizResponseForCandidate(quiz);
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Returns quiz with questions and options
+    \item Uses special conversion that hides correct answers
+    \item Candidate sees questions but not solutions
+\end{itemize}
+
+\subsection{Method: toQuizResponseForCandidate}
+
+\begin{lstlisting}[caption=Quiz DTO for Candidates]
+private QuizResponse toQuizResponseForCandidate(Quiz quiz) {
+    List<QuestionResponse> questions = quiz.getQuestions()
+        .stream()
+        .map(q -> new QuestionResponse(
+                q.getId(),
+                q.getQuestionText(),
+                q.getType().name(),
+                q.getPoints(),
+                q.getOptions().stream()
+                        .map(o -> new OptionResponse(
+                            o.getId(), 
+                            o.getOptionText(), 
+                            null)) // Hide correct answer!
+                        .collect(Collectors.toList())
+        ))
+        .collect(Collectors.toList());
+
+    return new QuizResponse(/* ... */);
+}
+\end{lstlisting}
+
+\textbf{Key Point:}
+\begin{itemize}
+    \item \texttt{isCorrect} is set to \texttt{null}
+    \item Candidates cannot see correct answers
+    \item Prevents cheating
+\end{itemize}
+
