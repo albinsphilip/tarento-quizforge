@@ -1,0 +1,630 @@
+{
+	"info": {
+		"name": "QuizForge API - Complete Collection",
+		"description": "Complete API testing collection for QuizForge online quiz platform\n\n**How to Use:**\n1. Login as Admin or Candidate with credentials below\n2. Token is automatically saved to collection variable\n3. All subsequent requests use this token automatically\n\n**Credentials:**\n- ADMIN: admin@quizforge.com / admin123\n- CANDIDATE: candidate@example.com / candidate123\n\n**Note:** Passwords are BCrypt hashed and verified on login.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login as Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"jwt_token\", jsonData.token);",
+									"    pm.collectionVariables.set(\"user_email\", jsonData.email);",
+									"    pm.collectionVariables.set(\"user_role\", jsonData.role);",
+									"    console.log(\"Token saved:\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@quizforge.com\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login as Admin to get JWT token. Use email: admin@quizforge.com"
+					},
+					"response": []
+				},
+				{
+					"name": "Login as Candidate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"jwt_token\", jsonData.token);",
+									"    pm.collectionVariables.set(\"user_email\", jsonData.email);",
+									"    pm.collectionVariables.set(\"user_role\", jsonData.role);",
+									"    console.log(\"Token saved:\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"candidate@example.com\",\n  \"password\": \"candidate123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login as Candidate to get JWT token. Use candidate@example.com with password: candidate123"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints - Login to get JWT token"
+		},
+		{
+			"name": "Admin - Quiz Management",
+			"item": [
+				{
+					"name": "Get All Quizzes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/admin/quizzes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "quizzes"]
+						},
+						"description": "Get list of all quizzes (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Quiz by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/admin/quizzes/{{quiz_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "quizzes", "{{quiz_id}}"]
+						},
+						"description": "Get detailed quiz information including correct answers (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Quiz - Java Basics",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"quiz_id\", jsonData.id);",
+									"    console.log(\"Quiz created with ID:\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Java Fundamentals Quiz\",\n  \"description\": \"Test your knowledge of Java programming basics\",\n  \"duration\": 30,\n  \"isActive\": true,\n  \"questions\": [\n    {\n      \"questionText\": \"What does JVM stand for?\",\n      \"type\": \"MULTIPLE_CHOICE\",\n      \"points\": 2,\n      \"options\": [\n        {\"optionText\": \"Java Virtual Machine\", \"isCorrect\": true},\n        {\"optionText\": \"Java Variable Method\", \"isCorrect\": false},\n        {\"optionText\": \"Java Void Main\", \"isCorrect\": false},\n        {\"optionText\": \"Java Value Manager\", \"isCorrect\": false}\n      ]\n    },\n    {\n      \"questionText\": \"Java is a platform-independent language.\",\n      \"type\": \"TRUE_FALSE\",\n      \"points\": 1,\n      \"options\": [\n        {\"optionText\": \"True\", \"isCorrect\": true},\n        {\"optionText\": \"False\", \"isCorrect\": false}\n      ]\n    },\n    {\n      \"questionText\": \"Which keyword is used to inherit a class in Java?\",\n      \"type\": \"MULTIPLE_CHOICE\",\n      \"points\": 2,\n      \"options\": [\n        {\"optionText\": \"implements\", \"isCorrect\": false},\n        {\"optionText\": \"extends\", \"isCorrect\": true},\n        {\"optionText\": \"inherits\", \"isCorrect\": false},\n        {\"optionText\": \"derives\", \"isCorrect\": false}\n      ]\n    },\n    {\n      \"questionText\": \"What is the default value of a boolean variable in Java?\",\n      \"type\": \"MULTIPLE_CHOICE\",\n      \"points\": 1,\n      \"options\": [\n        {\"optionText\": \"true\", \"isCorrect\": false},\n        {\"optionText\": \"false\", \"isCorrect\": true},\n        {\"optionText\": \"null\", \"isCorrect\": false},\n        {\"optionText\": \"0\", \"isCorrect\": false}\n      ]\n    },\n    {\n      \"questionText\": \"Arrays in Java are objects.\",\n      \"type\": \"TRUE_FALSE\",\n      \"points\": 1,\n      \"options\": [\n        {\"optionText\": \"True\", \"isCorrect\": true},\n        {\"optionText\": \"False\", \"isCorrect\": false}\n      ]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/quizzes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "quizzes"]
+						},
+						"description": "Create a new quiz with questions (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Quiz - Spring Boot",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"quiz_id_2\", jsonData.id);",
+									"    console.log(\"Spring Boot Quiz created with ID:\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Spring Boot Framework Quiz\",\n  \"description\": \"Test your Spring Boot knowledge\",\n  \"duration\": 45,\n  \"isActive\": true,\n  \"questions\": [\n    {\n      \"questionText\": \"What annotation is used to mark a class as Spring Boot main class?\",\n      \"type\": \"MULTIPLE_CHOICE\",\n      \"points\": 2,\n      \"options\": [\n        {\"optionText\": \"@SpringApplication\", \"isCorrect\": false},\n        {\"optionText\": \"@SpringBootApplication\", \"isCorrect\": true},\n        {\"optionText\": \"@EnableAutoConfiguration\", \"isCorrect\": false},\n        {\"optionText\": \"@MainApplication\", \"isCorrect\": false}\n      ]\n    },\n    {\n      \"questionText\": \"Spring Boot uses embedded Tomcat by default.\",\n      \"type\": \"TRUE_FALSE\",\n      \"points\": 1,\n      \"options\": [\n        {\"optionText\": \"True\", \"isCorrect\": true},\n        {\"optionText\": \"False\", \"isCorrect\": false}\n      ]\n    },\n    {\n      \"questionText\": \"Which annotation is used for dependency injection in Spring?\",\n      \"type\": \"MULTIPLE_CHOICE\",\n      \"points\": 2,\n      \"options\": [\n        {\"optionText\": \"@Inject\", \"isCorrect\": false},\n        {\"optionText\": \"@Autowired\", \"isCorrect\": true},\n        {\"optionText\": \"@DependencyInject\", \"isCorrect\": false},\n        {\"optionText\": \"@Wire\", \"isCorrect\": false}\n      ]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/quizzes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "quizzes"]
+						},
+						"description": "Create another quiz for demonstration"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Quiz",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Java Fundamentals Quiz - Updated\",\n  \"description\": \"Updated description - Test your knowledge of Java programming\",\n  \"duration\": 40,\n  \"isActive\": true,\n  \"questions\": [\n    {\n      \"questionText\": \"What does JVM stand for?\",\n      \"type\": \"MULTIPLE_CHOICE\",\n      \"points\": 2,\n      \"options\": [\n        {\"optionText\": \"Java Virtual Machine\", \"isCorrect\": true},\n        {\"optionText\": \"Java Variable Method\", \"isCorrect\": false},\n        {\"optionText\": \"Java Void Main\", \"isCorrect\": false},\n        {\"optionText\": \"Java Value Manager\", \"isCorrect\": false}\n      ]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/quizzes/{{quiz_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "quizzes", "{{quiz_id}}"]
+						},
+						"description": "Update an existing quiz (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Quiz Analytics",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/admin/quizzes/{{quiz_id}}/analytics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "quizzes", "{{quiz_id}}", "analytics"]
+						},
+						"description": "Get analytics for a quiz - attempts, scores, statistics (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Quiz",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/admin/quizzes/{{quiz_id_to_delete}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "quizzes", "{{quiz_id_to_delete}}"]
+						},
+						"description": "Delete a quiz permanently (Admin only). Set quiz_id_to_delete variable first."
+					},
+					"response": []
+				}
+			],
+			"description": "Admin APIs for quiz management - Create, Read, Update, Delete quizzes",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwt_token}}",
+						"type": "string"
+					}
+				]
+			}
+		},
+		{
+			"name": "Candidate - Quiz Taking",
+			"item": [
+				{
+					"name": "Get Available Quizzes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/candidate/quizzes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "candidate", "quizzes"]
+						},
+						"description": "Get list of all active quizzes available for taking (Candidate only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Quiz Questions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/candidate/quizzes/{{quiz_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "candidate", "quizzes", "{{quiz_id}}"]
+						},
+						"description": "Get quiz questions (without correct answers shown) for taking the quiz"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Quiz Attempt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"attempt_id\", jsonData.id);",
+									"    console.log(\"Attempt started with ID:\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/candidate/quizzes/{{quiz_id}}/start",
+							"host": ["{{base_url}}"],
+							"path": ["api", "candidate", "quizzes", "{{quiz_id}}", "start"]
+						},
+						"description": "Start a new quiz attempt - Returns attempt ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Quiz Answers",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"attemptId\": {{attempt_id}},\n  \"answers\": [\n    {\n      \"questionId\": 1,\n      \"selectedOptionId\": 1,\n      \"textAnswer\": null\n    },\n    {\n      \"questionId\": 2,\n      \"selectedOptionId\": 3,\n      \"textAnswer\": null\n    },\n    {\n      \"questionId\": 3,\n      \"selectedOptionId\": 6,\n      \"textAnswer\": null\n    },\n    {\n      \"questionId\": 4,\n      \"selectedOptionId\": 10,\n      \"textAnswer\": null\n    },\n    {\n      \"questionId\": 5,\n      \"selectedOptionId\": 13,\n      \"textAnswer\": null\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/candidate/quizzes/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "candidate", "quizzes", "submit"]
+						},
+						"description": "Submit answers for a quiz attempt. Get immediate results with score.\n\nNOTE: Update questionId and selectedOptionId based on actual quiz data from 'Get Quiz Questions' response."
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Attempts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/candidate/quizzes/my-attempts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "candidate", "quizzes", "my-attempts"]
+						},
+						"description": "Get all quiz attempts made by the current candidate"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Attempt Result",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/candidate/quizzes/attempts/{{attempt_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "candidate", "quizzes", "attempts", "{{attempt_id}}"]
+						},
+						"description": "Get detailed result of a specific attempt"
+					},
+					"response": []
+				}
+			],
+			"description": "Candidate APIs for taking quizzes and viewing results",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwt_token}}",
+						"type": "string"
+					}
+				]
+			}
+		},
+		{
+			"name": "Security Tests",
+			"item": [
+				{
+					"name": "Access Admin Endpoint Without Token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/admin/quizzes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "quizzes"]
+						},
+						"description": "Should return 401 Unauthorized - No token provided"
+					},
+					"response": []
+				},
+				{
+					"name": "Access Admin Endpoint as Candidate",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/admin/quizzes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "quizzes"]
+						},
+						"description": "Should return 403 Forbidden - Candidate trying to access admin endpoint. First login as candidate, then run this."
+					},
+					"response": []
+				},
+				{
+					"name": "Access Candidate Endpoint as Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/candidate/quizzes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "candidate", "quizzes"]
+						},
+						"description": "Should return 403 Forbidden - Admin trying to access candidate endpoint"
+					},
+					"response": []
+				}
+			],
+			"description": "Test security and authorization"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_email",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_role",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "quiz_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "quiz_id_2",
+			"value": "2",
+			"type": "string"
+		},
+		{
+			"key": "attempt_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "quiz_id_to_delete",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

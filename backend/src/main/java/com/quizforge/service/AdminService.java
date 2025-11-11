@@ -40,15 +40,7 @@ public class AdminService {
     @Transactional
     public QuizResponse createQuiz(QuizRequest request, String adminEmail) {
         User admin = userRepository.findByEmail(adminEmail)
-                .orElseGet(() -> {
-                    // Create dummy admin user if not exists
-                    User newAdmin = new User();
-                    newAdmin.setEmail(adminEmail);
-                    newAdmin.setName("Admin");
-                    newAdmin.setPassword("dummy");
-                    newAdmin.setRole(User.Role.ADMIN);
-                    return userRepository.save(newAdmin);
-                });
+                .orElseThrow(() -> new RuntimeException("Admin user not found"));
 
         Quiz quiz = new Quiz();
         quiz.setTitle(request.title());

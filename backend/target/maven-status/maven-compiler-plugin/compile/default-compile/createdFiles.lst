@@ -6,6 +6,7 @@ com/quizforge/repository/UserRepository.class
 com/quizforge/dto/OptionRequest.class
 com/quizforge/dto/LoginResponse.class
 com/quizforge/controller/CandidateController.class
+com/quizforge/config/DataSeeder.class
 com/quizforge/dto/OptionResponse.class
 com/quizforge/service/AdminService.class
 com/quizforge/model/QuizAttempt.class

@@ -22,23 +22,18 @@ public class AuthService {
     private JwtUtil jwtUtil;
 
     public LoginResponse login(LoginRequest request) {
-        // Dummy authentication logic
-        // admin@quizforge.com -> ADMIN role
-        // any other email -> CANDIDATE role
+        // Find user by email
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
         
-        User.Role role;
-        String name;
-        
-        if ("admin@quizforge.com".equals(request.email())) {
-            role = User.Role.ADMIN;
-            name = "Admin User";
-        } else {
-            role = User.Role.CANDIDATE;
-            name = "Candidate User";
+        // Verify password using BCrypt
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
         }
         
-        String token = jwtUtil.generateToken(request.email(), role.name());
+        // Generate JWT token
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
         
-        return new LoginResponse(token, request.email(), name, role.name());
+        return new LoginResponse(token, user.getEmail(), user.getName(), user.getRole().name());
     }
 }

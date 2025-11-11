@@ -41,15 +41,7 @@ public class CandidateService {
                 .orElseThrow(() -> new RuntimeException("Quiz not found"));
 
         User candidate = userRepository.findByEmail(candidateEmail)
-                .orElseGet(() -> {
-                    // Create dummy candidate user if not exists
-                    User newCandidate = new User();
-                    newCandidate.setEmail(candidateEmail);
-                    newCandidate.setName("Candidate");
-                    newCandidate.setPassword("dummy");
-                    newCandidate.setRole(User.Role.CANDIDATE);
-                    return userRepository.save(newCandidate);
-                });
+                .orElseThrow(() -> new RuntimeException("Candidate user not found"));
 
         QuizAttempt attempt = new QuizAttempt();
         attempt.setQuiz(quiz);
