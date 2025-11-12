@@ -1,0 +1,120 @@
+% QuizForge Complete Backend Documentation
+% Main Document
+\documentclass[12pt,a4paper]{report}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.multipart, positioning, arrows.meta, calc}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{pdflscape}
+
+% Page geometry
+\geometry{
+    a4paper,
+    left=25mm,
+    right=25mm,
+    top=30mm,
+    bottom=30mm
+}
+
+% Colors
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{javakey}{rgb}{0.5,0,0.35}
+
+% Code listing style
+\lstdefinestyle{javastyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{javakey}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    frame=single,
+    language=Java
+}
+
+\lstset{style=javastyle}
+
+% Hyperref setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={QuizForge Backend Documentation},
+    pdfauthor={System Documentation},
+    pdfsubject={Complete Backend Analysis},
+}
+
+% Headers and footers
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{QuizForge Backend}
+\fancyfoot[C]{\thepage}
+
+% Title formatting
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+% Document metadata
+\title{%
+    \Huge\textbf{QuizForge} \\
+    \Large Complete Backend Documentation \\
+    \large Version 1.0.0
+}
+\author{Technical Documentation}
+\date{\today}
+
+\begin{document}
+
+% Title page
+\maketitle
+\tableofcontents
+\newpage
+
+% Include all sections
+\input{chapters/01_introduction}
+\input{chapters/02_architecture}
+\input{chapters/03_models}
+\input{chapters/03_models_continued}
+\input{chapters/04_repositories}
+\input{chapters/05_services}
+\input{chapters/05_services_continued}
+\input{chapters/06_controllers}
+\input{chapters/07_security}
+\input{chapters/08_api_documentation}
+\input{chapters/09_er_diagram}
+\input{chapters/10_configuration}
+
+% Appendix
+\appendix
+\input{chapters/appendix_a_dependencies}
+
+\end{document}

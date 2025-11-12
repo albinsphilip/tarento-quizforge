@@ -1,0 +1,356 @@
+% Chapter 8: API Documentation
+\chapter{OpenAPI 3.0 Documentation}
+
+\section{OpenAPI Configuration}
+
+\subsection{OpenApiConfig Class}
+
+\begin{lstlisting}[caption=OpenApiConfig.java]
+@Configuration
+public class OpenApiConfig {
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title(''QuizForge API'')
+                        .version(''1.0'')
+                        .description(''Online Quiz Platform - Role-based API (ADMIN & CANDIDATE)''))
+                .servers(List.of(new Server()
+                    .url(''http://localhost:8080'')
+                    .description(''Development Server'')))
+                .addSecurityItem(new SecurityRequirement()
+                    .addList(''bearerAuth''))
+                .components(new Components()
+                        .addSecuritySchemes(''bearerAuth'',
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme(''bearer'')
+                                        .bearerFormat(''JWT'')
+                                        .description(''Enter JWT token obtained from /api/auth/login'')));
+    }
+}
+\end{lstlisting}
+
+\subsection{Configuration Elements}
+
+\begin{itemize}
+    \item \textbf{Info:} API metadata (title, version, description)
+    \item \textbf{Servers:} Available server endpoints
+    \item \textbf{SecurityRequirement:} Global security requirement
+    \item \textbf{SecurityScheme:} JWT Bearer authentication definition
+\end{itemize}
+
+\section{API Endpoints Reference}
+
+\subsection{Authentication Endpoints}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Endpoint} & POST /api/auth/login \\
+\hline
+\textbf{Summary} & Login and get JWT token \\
+\hline
+\textbf{Description} & Use admin@quizforge.com for ADMIN role, any other email for CANDIDATE role \\
+\hline
+\textbf{Request Body} & \begin{lstlisting}[language=json]
+{
+  ''email'': ''string'',
+  ''password'': ''string''
+}
+\end{lstlisting} \\
+\hline
+\textbf{Response 200} & \begin{lstlisting}[language=json]
+{
+  ''token'': ''string'',
+  ''email'': ''string'',
+  ''name'': ''string'',
+  ''role'': ''string''
+}
+\end{lstlisting} \\
+\hline
+\textbf{Security} & None (public endpoint) \\
+\hline
+\caption{Login Endpoint Documentation}
+\end{longtable}
+
+\subsection{Admin Endpoints}
+
+\subsubsection{GET /api/admin/quizzes}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Summary} & Get all quizzes \\
+\hline
+\textbf{Description} & Retrieve list of all quizzes \\
+\hline
+\textbf{Security} & Bearer JWT (ADMIN role required) \\
+\hline
+\textbf{Response 200} & Array of QuizSummaryResponse \\
+\hline
+\textbf{Response Example} & \begin{lstlisting}[language=json]
+[
+  {
+    ''id'': 1,
+    ''title'': ''Java Basics'',
+    ''description'': ''Test your Java knowledge'',
+    ''duration'': 30,
+    ''isActive'': true,
+    ''createdBy'': ''Admin User'',
+    ''createdAt'': ''2024-11-10T10:00:00'',
+    ''questionCount'': 10
+  }
+]
+\end{lstlisting} \\
+\hline
+\caption{Get All Quizzes Documentation}
+\end{longtable}
+
+\subsubsection{GET /api/admin/quizzes/\{id\}}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Summary} & Get quiz by ID \\
+\hline
+\textbf{Parameters} & id (path, required): Quiz ID \\
+\hline
+\textbf{Security} & Bearer JWT (ADMIN role) \\
+\hline
+\textbf{Response 200} & QuizResponse with full details \\
+\hline
+\textbf{Response 404} & Quiz not found \\
+\hline
+\caption{Get Quiz by ID Documentation}
+\end{longtable}
+
+\subsubsection{POST /api/admin/quizzes}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Summary} & Create new quiz \\
+\hline
+\textbf{Request Body} & \begin{lstlisting}[language=json, basicstyle=\ttfamily\tiny]
+{
+  ''title'': ''Java Basics'',
+  ''description'': ''Test your Java knowledge'',
+  ''duration'': 30,
+  ''isActive'': true,
+  ''questions'': [
+    {
+      ''questionText'': ''What is Java?'',
+      ''type'': ''MULTIPLE_CHOICE'',
+      ''points'': 1,
+      ''options'': [
+        {
+          ''optionText'': ''Programming language'',
+          ''isCorrect'': true
+        },
+        {
+          ''optionText'': ''Coffee brand'',
+          ''isCorrect'': false
+        }
+      ]
+    }
+  ]
+}
+\end{lstlisting} \\
+\hline
+\textbf{Response 201} & Created quiz with assigned IDs \\
+\hline
+\textbf{Response 400} & Validation errors \\
+\hline
+\caption{Create Quiz Documentation}
+\end{longtable}
+
+\subsubsection{PUT /api/admin/quizzes/\{id\}}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Summary} & Update existing quiz \\
+\hline
+\textbf{Parameters} & id (path, required): Quiz ID \\
+\hline
+\textbf{Request Body} & Same as POST (full quiz data) \\
+\hline
+\textbf{Response 200} & Updated quiz \\
+\hline
+\textbf{Response 404} & Quiz not found \\
+\hline
+\caption{Update Quiz Documentation}
+\end{longtable}
+
+\subsubsection{DELETE /api/admin/quizzes/\{id\}}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Summary} & Delete quiz \\
+\hline
+\textbf{Parameters} & id (path, required): Quiz ID \\
+\hline
+\textbf{Response 204} & No content (success) \\
+\hline
+\textbf{Response 404} & Quiz not found \\
+\hline
+\caption{Delete Quiz Documentation}
+\end{longtable}
+
+\subsubsection{GET /api/admin/quizzes/\{id\}/analytics}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Summary} & Get quiz analytics \\
+\hline
+\textbf{Parameters} & id (path, required): Quiz ID \\
+\hline
+\textbf{Response 200} & \begin{lstlisting}[language=json]
+{
+  ''quizId'': 1,
+  ''quizTitle'': ''Java Basics'',
+  ''totalAttempts'': 15,
+  ''averageScore'': 7.5,
+  ''highestScore'': 10,
+  ''lowestScore'': 3
+}
+\end{lstlisting} \\
+\hline
+\caption{Quiz Analytics Documentation}
+\end{longtable}
+
+\subsection{Candidate Endpoints}
+
+\subsubsection{GET /api/candidate/quizzes}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Summary} & Get available quizzes \\
+\hline
+\textbf{Security} & Bearer JWT (CANDIDATE role) \\
+\hline
+\textbf{Response 200} & Array of active quizzes (summary) \\
+\hline
+\caption{Get Available Quizzes Documentation}
+\end{longtable}
+
+\subsubsection{POST /api/candidate/quizzes/\{quizId\}/start}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Summary} & Start quiz attempt \\
+\hline
+\textbf{Parameters} & quizId (path, required) \\
+\hline
+\textbf{Response 200} & \begin{lstlisting}[language=json]
+{
+  ''id'': 1,
+  ''quizId'': 1,
+  ''quizTitle'': ''Java Basics'',
+  ''startedAt'': ''2024-11-10T10:00:00'',
+  ''submittedAt'': null,
+  ''score'': null,
+  ''totalPoints'': 10,
+  ''status'': ''IN_PROGRESS''
+}
+\end{lstlisting} \\
+\hline
+\caption{Start Quiz Documentation}
+\end{longtable}
+
+\subsubsection{GET /api/candidate/quizzes/\{quizId\}}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Summary} & Get quiz questions \\
+\hline
+\textbf{Description} & Returns questions with options, but isCorrect is hidden \\
+\hline
+\textbf{Parameters} & quizId (path, required) \\
+\hline
+\textbf{Response 200} & QuizResponse (without correct answers) \\
+\hline
+\caption{Get Quiz Questions Documentation}
+\end{longtable}
+
+\subsubsection{POST /api/candidate/quizzes/submit}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Summary} & Submit quiz answers \\
+\hline
+\textbf{Request Body} & \begin{lstlisting}[language=json]
+{
+  ''attemptId'': 1,
+  ''answers'': [
+    {
+      ''questionId'': 1,
+      ''selectedOptionId'': 3,
+      ''textAnswer'': null
+    },
+    {
+      ''questionId'': 2,
+      ''selectedOptionId'': null,
+      ''textAnswer'': ''Sample answer''
+    }
+  ]
+}
+\end{lstlisting} \\
+\hline
+\textbf{Response 200} & AttemptResponse with calculated score \\
+\hline
+\caption{Submit Quiz Documentation}
+\end{longtable}
+
+\subsubsection{GET /api/candidate/quizzes/my-attempts}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Summary} & Get my quiz attempts \\
+\hline
+\textbf{Response 200} & Array of user's attempts with scores \\
+\hline
+\caption{Get My Attempts Documentation}
+\end{longtable}
+
+\subsubsection{GET /api/candidate/quizzes/attempts/\{attemptId\}}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Summary} & Get attempt result \\
+\hline
+\textbf{Parameters} & attemptId (path, required) \\
+\hline
+\textbf{Response 200} & Detailed attempt results \\
+\hline
+\textbf{Response 403} & Not your attempt (forbidden) \\
+\hline
+\caption{Get Attempt Result Documentation}
+\end{longtable}
+
+\section{Swagger UI Access}
+
+The interactive API documentation is available at:
+
+\texttt{http://localhost:8080/swagger-ui.html}
+
+Features:
+\begin{itemize}
+    \item Try API endpoints directly from browser
+    \item Automatic request/response examples
+    \item JWT authentication support
+    \item Grouped by controller tags
+    \item Alphabetically sorted operations
+\end{itemize}
+
+\section{OpenAPI JSON Specification}
+
+The raw OpenAPI 3.0 specification is available at:
+
+\texttt{http://localhost:8080/v3/api-docs}
+
+Can be used with:
+\begin{itemize}
+    \item Code generators (OpenAPI Generator)
+    \item API testing tools (Postman, Insomnia)
+    \item Documentation generators
+    \item Mock server tools
+\end{itemize}
+

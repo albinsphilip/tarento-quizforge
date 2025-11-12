@@ -1,0 +1,314 @@
+% Chapter 4: Repositories
+\chapter{Repository Layer}
+
+\section{Overview}
+
+The repository layer provides an abstraction over database operations using Spring Data JPA. All repositories extend \texttt{JpaRepository}, providing CRUD operations and query methods.
+
+\section{UserRepository}
+
+\subsection{Complete Source Code}
+
+\begin{lstlisting}[caption=UserRepository.java]
+package com.quizforge.repository;
+
+import com.quizforge.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmail(String email);
+    boolean existsByEmail(String email);
+}
+\end{lstlisting}
+
+\subsection{Detailed Explanation}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Line 1: Package Declaration}
+    \begin{itemize}
+        \item Groups all repository interfaces
+        \item Separate from model and service packages
+    \end{itemize}
+    
+    \item \textbf{Line 9: @Repository Annotation}
+    \begin{itemize}
+        \item Marks as Spring repository bean
+        \item Enables exception translation
+        \item Component scanning detection
+    \end{itemize}
+    
+    \item \textbf{Line 10: Interface Extension}
+    \begin{itemize}
+        \item Extends \texttt{JpaRepository<User, Long>}
+        \item \texttt{User}: Entity type
+        \item \texttt{Long}: Primary key type
+        \item Inherits: save(), findById(), findAll(), delete(), etc.
+    \end{itemize}
+    
+    \item \textbf{Line 11: findByEmail Method}
+    \begin{itemize}
+        \item Custom query method using Spring Data naming convention
+        \item Generated SQL: \texttt{SELECT * FROM users WHERE email = ?}
+        \item Returns \texttt{Optional<User>} (may not exist)
+        \item Used for authentication lookup
+    \end{itemize}
+    
+    \item \textbf{Line 12: existsByEmail Method}
+    \begin{itemize}
+        \item Checks if email exists in database
+        \item Generated SQL: \texttt{SELECT COUNT(*) > 0 FROM users WHERE email = ?}
+        \item Returns boolean (true if exists)
+        \item More efficient than findByEmail when only checking existence
+    \end{itemize}
+\end{itemize}
+
+\subsection{Inherited Methods from JpaRepository}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Method} & \textbf{Description} \\
+\hline
+save(User user) & Insert or update user \\
+\hline
+findById(Long id) & Find user by ID \\
+\hline
+findAll() & Retrieve all users \\
+\hline
+deleteById(Long id) & Delete user by ID \\
+\hline
+count() & Count total users \\
+\hline
+existsById(Long id) & Check if user exists \\
+\hline
+\end{tabular}
+\caption{Inherited JpaRepository Methods}
+\end{table}
+
+\section{QuizRepository}
+
+\subsection{Complete Source Code}
+
+\begin{lstlisting}[caption=QuizRepository.java]
+package com.quizforge.repository;
+
+import com.quizforge.model.Quiz;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface QuizRepository extends JpaRepository<Quiz, Long> {
+    List<Quiz> findByIsActiveTrue();
+    List<Quiz> findByCreatedById(Long userId);
+}
+\end{lstlisting}
+
+\subsection{Detailed Explanation}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Line 11: findByIsActiveTrue Method}
+    \begin{itemize}
+        \item Finds all active quizzes
+        \item Generated SQL: \texttt{SELECT * FROM quizzes WHERE is\_active = true}
+        \item Used by candidates to see available quizzes
+        \item Returns List (can be empty)
+    \end{itemize}
+    
+    \item \textbf{Line 12: findByCreatedById Method}
+    \begin{itemize}
+        \item Finds quizzes created by specific admin
+        \item Generated SQL: \texttt{SELECT * FROM quizzes WHERE created\_by = ?}
+        \item Navigates through createdBy relationship
+        \item Could be used for admin dashboard filtering
+    \end{itemize}
+\end{itemize}
+
+\section{QuestionRepository}
+
+\subsection{Complete Source Code}
+
+\begin{lstlisting}[caption=QuestionRepository.java]
+package com.quizforge.repository;
+
+import com.quizforge.model.Question;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface QuestionRepository extends JpaRepository<Question, Long> {
+}
+\end{lstlisting}
+
+\subsection{Detailed Explanation}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Basic Repository}
+    \begin{itemize}
+        \item No custom methods defined
+        \item Uses only inherited JpaRepository methods
+        \item Questions accessed primarily through Quiz relationship
+        \item Used for individual question lookup by ID
+    \end{itemize}
+\end{itemize}
+
+\section{QuizAttemptRepository}
+
+\subsection{Complete Source Code}
+
+\begin{lstlisting}[caption=QuizAttemptRepository.java]
+package com.quizforge.repository;
+
+import com.quizforge.model.QuizAttempt;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface QuizAttemptRepository 
+        extends JpaRepository<QuizAttempt, Long> {
+    List<QuizAttempt> findByUserId(Long userId);
+    List<QuizAttempt> findByQuizId(Long quizId);
+}
+\end{lstlisting}
+
+\subsection{Detailed Explanation}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Line 12: findByUserId Method}
+    \begin{itemize}
+        \item Retrieves all attempts by a specific user
+        \item Generated SQL: \texttt{SELECT * FROM quiz\_attempts WHERE user\_id = ?}
+        \item Used for candidate's attempt history
+        \item Navigates through user relationship
+    \end{itemize}
+    
+    \item \textbf{Line 13: findByQuizId Method}
+    \begin{itemize}
+        \item Retrieves all attempts for a specific quiz
+        \item Generated SQL: \texttt{SELECT * FROM quiz\_attempts WHERE quiz\_id = ?}
+        \item Used for quiz analytics
+        \item Shows which candidates took the quiz
+    \end{itemize}
+\end{itemize}
+
+\section{AnswerRepository}
+
+\subsection{Complete Source Code}
+
+\begin{lstlisting}[caption=AnswerRepository.java]
+package com.quizforge.repository;
+
+import com.quizforge.model.Answer;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface AnswerRepository extends JpaRepository<Answer, Long> {
+}
+\end{lstlisting}
+
+\subsection{Detailed Explanation}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Basic Repository}
+    \begin{itemize}
+        \item No custom methods needed
+        \item Answers accessed through QuizAttempt relationship
+        \item Uses inherited save() method for persisting answers
+    \end{itemize}
+\end{itemize}
+
+\section{Spring Data JPA Query Methods}
+
+\subsection{Naming Convention Examples}
+
+Spring Data JPA automatically generates queries based on method names:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|p{5cm}|p{7cm}|}
+\hline
+\textbf{Method Name} & \textbf{Generated Query} \\
+\hline
+findByEmail(String email) & WHERE email = ? \\
+\hline
+findByEmailAndRole(String email, Role role) & WHERE email = ? AND role = ? \\
+\hline
+findByIsActiveTrue() & WHERE is\_active = true \\
+\hline
+findByCreatedAtBefore(LocalDateTime date) & WHERE created\_at < ? \\
+\hline
+findByTitleContaining(String keyword) & WHERE title LIKE \%keyword\% \\
+\hline
+countByRole(Role role) & SELECT COUNT(*) WHERE role = ? \\
+\hline
+deleteByEmail(String email) & DELETE WHERE email = ? \\
+\hline
+\end{tabular}
+\caption{Spring Data JPA Query Method Patterns}
+\end{table}
+
+\subsection{Supported Keywords}
+
+\begin{itemize}
+    \item \textbf{And, Or:} Logical operators
+    \item \textbf{Between:} Range queries
+    \item \textbf{LessThan, GreaterThan:} Comparison
+    \item \textbf{Like, Containing:} String matching
+    \item \textbf{IsNull, IsNotNull:} Null checks
+    \item \textbf{True, False:} Boolean values
+    \item \textbf{OrderBy:} Sorting results
+    \item \textbf{First, Top:} Limiting results
+\end{itemize}
+
+\section{Transaction Management}
+
+Repositories participate in Spring's transaction management:
+
+\begin{itemize}
+    \item \textbf{Read Operations:} Typically no explicit transaction needed
+    \item \textbf{Write Operations:} Should be wrapped in @Transactional (at service layer)
+    \item \textbf{Batch Operations:} Use saveAll() for multiple entities
+    \item \textbf{Flush:} Call flush() to force synchronization with database
+\end{itemize}
+
+\section{Performance Considerations}
+
+\subsection{N+1 Query Problem}
+
+When loading relationships, avoid the N+1 query problem:
+
+\begin{lstlisting}[caption=Avoiding N+1 Problem]
+// Bad: Causes N+1 queries
+List<Quiz> quizzes = quizRepository.findAll();
+for (Quiz quiz : quizzes) {
+    User creator = quiz.getCreatedBy(); // Separate query per quiz
+}
+
+// Good: Use @EntityGraph or fetch join
+@Query(''SELECT q FROM Quiz q LEFT JOIN FETCH q.createdBy'')
+List<Quiz> findAllWithCreator();
+\end{lstlisting}
+
+\subsection{Pagination}
+
+For large datasets, use pagination:
+
+\begin{lstlisting}[caption=Repository with Pagination]
+Page<Quiz> findAll(Pageable pageable);
+
+// Usage
+Pageable pageable = PageRequest.of(0, 10); // Page 0, size 10
+Page<Quiz> page = quizRepository.findAll(pageable);
+\end{lstlisting}
+

@@ -1,0 +1,292 @@
+% Chapter 6: Controllers
+\chapter{REST Controllers}
+
+\section{Overview}
+
+Controllers handle HTTP requests and responses, mapping URLs to service methods. They use Spring MVC annotations for routing and OpenAPI annotations for documentation.
+
+\section{AuthController}
+
+\subsection{Complete Source Code}
+
+\begin{lstlisting}[caption=AuthController.java]
+@RestController
+@RequestMapping(''/api/auth'')
+@Tag(name = ''Authentication'', 
+     description = ''Login endpoints - Get JWT token'')
+public class AuthController {
+
+    @Autowired
+    private AuthService authService;
+
+    @PostMapping(''/login'')
+    @Operation(
+        summary = ''Login and get JWT token'',
+        description = ''Use admin@quizforge.com for ADMIN role, any other email for CANDIDATE role. Password is ignored for now.''
+    )
+    public ResponseEntity<LoginResponse> login(
+            @Valid @RequestBody LoginRequest request) {
+        LoginResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
+    }
+}
+\end{lstlisting}
+
+\subsection{Annotations Explained}
+
+\begin{itemize}
+    \item \textbf{@RestController}: Combines @Controller and @ResponseBody, returns JSON
+    \item \textbf{@RequestMapping}: Base URL path for all endpoints in controller
+    \item \textbf{@Tag}: OpenAPI documentation grouping
+    \item \textbf{@PostMapping}: Maps HTTP POST to method
+    \item \textbf{@Operation}: OpenAPI documentation for endpoint
+    \item \textbf{@Valid}: Triggers Bean Validation on request body
+    \item \textbf{@RequestBody}: Deserializes JSON to LoginRequest object
+\end{itemize}
+
+\subsection{Endpoint Documentation}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Property} & \textbf{Value} \\
+\hline
+URL & POST /api/auth/login \\
+Request Body & LoginRequest (email, password) \\
+Response & LoginResponse (token, email, name, role) \\
+Status Code & 200 OK \\
+Authentication & None required (public endpoint) \\
+\hline
+\end{tabular}
+\caption{Login Endpoint Details}
+\end{table}
+
+\section{AdminController}
+
+\subsection{Class-Level Annotations}
+
+\begin{lstlisting}[caption=AdminController Annotations]
+@RestController
+@RequestMapping(''/api/admin/quizzes'')
+@Tag(name = ''Admin - Quiz Management'', 
+     description = ''ADMIN role: Create, edit, delete quizzes and view analytics'')
+@SecurityRequirement(name = ''bearerAuth'')
+public class AdminController {
+    @Autowired
+    private AdminService adminService;
+}
+\end{lstlisting}
+
+\textbf{Key Points:}
+\begin{itemize}
+    \item Base path: \texttt{/api/admin/quizzes}
+    \item Requires JWT authentication
+    \item Only accessible to ADMIN role
+\end{itemize}
+
+\subsection{GET All Quizzes}
+
+\begin{lstlisting}[caption=Get All Quizzes Endpoint]
+@GetMapping
+@Operation(summary = ''Get all quizzes'', 
+           description = ''Retrieve list of all quizzes'')
+public ResponseEntity<List<QuizSummaryResponse>> getAllQuizzes() {
+    return ResponseEntity.ok(adminService.getAllQuizzes());
+}
+\end{lstlisting}
+
+\textbf{Endpoint:} GET /api/admin/quizzes
+
+\subsection{GET Quiz by ID}
+
+\begin{lstlisting}[caption=Get Quiz by ID Endpoint]
+@GetMapping(''/{id}'')
+@Operation(summary = ''Get quiz by ID'', 
+           description = ''Retrieve detailed quiz information including questions and correct answers'')
+public ResponseEntity<QuizResponse> getQuizById(
+        @PathVariable Long id) {
+    return ResponseEntity.ok(adminService.getQuizById(id));
+}
+\end{lstlisting}
+
+\textbf{Endpoint:} GET /api/admin/quizzes/\{id\}
+
+\begin{itemize}
+    \item \texttt{@PathVariable}: Extracts \{id\} from URL
+    \item Returns full quiz with questions and answers
+\end{itemize}
+
+\subsection{POST Create Quiz}
+
+\begin{lstlisting}[caption=Create Quiz Endpoint]
+@PostMapping
+@Operation(summary = ''Create new quiz'', 
+           description = ''Create a new quiz with questions and options'')
+public ResponseEntity<QuizResponse> createQuiz(
+        @Valid @RequestBody QuizRequest request,
+        Authentication authentication) {
+    String adminEmail = authentication.getName();
+    QuizResponse response = adminService.createQuiz(request, 
+                                                    adminEmail);
+    return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(response);
+}
+\end{lstlisting}
+
+\textbf{Endpoint:} POST /api/admin/quizzes
+
+\begin{itemize}
+    \item \texttt{Authentication}: Injected by Spring Security
+    \item \texttt{authentication.getName()}: Returns email from JWT
+    \item Returns 201 CREATED status
+\end{itemize}
+
+\subsection{PUT Update Quiz}
+
+\begin{lstlisting}[caption=Update Quiz Endpoint]
+@PutMapping(''/{id}'')
+@Operation(summary = ''Update quiz'', 
+           description = ''Update existing quiz with new data'')
+public ResponseEntity<QuizResponse> updateQuiz(
+        @PathVariable Long id,
+        @Valid @RequestBody QuizRequest request) {
+    return ResponseEntity.ok(
+        adminService.updateQuiz(id, request));
+}
+\end{lstlisting}
+
+\textbf{Endpoint:} PUT /api/admin/quizzes/\{id\}
+
+\subsection{DELETE Quiz}
+
+\begin{lstlisting}[caption=Delete Quiz Endpoint]
+@DeleteMapping(''/{id}'')
+@Operation(summary = ''Delete quiz'', 
+           description = ''Permanently delete a quiz'')
+public ResponseEntity<Void> deleteQuiz(@PathVariable Long id) {
+    adminService.deleteQuiz(id);
+    return ResponseEntity.noContent().build();
+}
+\end{lstlisting}
+
+\textbf{Endpoint:} DELETE /api/admin/quizzes/\{id\}
+
+\begin{itemize}
+    \item Returns 204 NO CONTENT
+    \item \texttt{ResponseEntity<Void>}: No response body
+\end{itemize}
+
+\subsection{GET Quiz Analytics}
+
+\begin{lstlisting}[caption=Get Analytics Endpoint]
+@GetMapping(''/{id}/analytics'')
+@Operation(summary = ''Get quiz analytics'', 
+           description = ''View statistics for a quiz including attempts, scores, etc.'')
+public ResponseEntity<QuizAnalyticsResponse> getQuizAnalytics(
+        @PathVariable Long id) {
+    return ResponseEntity.ok(
+        adminService.getQuizAnalytics(id));
+}
+\end{lstlisting}
+
+\textbf{Endpoint:} GET /api/admin/quizzes/\{id\}/analytics
+
+\section{CandidateController}
+
+\subsection{Class-Level Annotations}
+
+\begin{lstlisting}[caption=CandidateController Annotations]
+@RestController
+@RequestMapping(''/api/candidate/quizzes'')
+@Tag(name = ''Candidate - Quiz Taking'', 
+     description = ''CANDIDATE role: View quizzes, start quiz, submit answers, view results'')
+@SecurityRequirement(name = ''bearerAuth'')
+public class CandidateController {
+    @Autowired
+    private CandidateService candidateService;
+}
+\end{lstlisting}
+
+\subsection{Endpoint Summary Table}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|l|l|p{5cm}|}
+\hline
+\textbf{Method} & \textbf{URL} & \textbf{Description} \\
+\hline
+GET & /api/candidate/quizzes & List active quizzes \\
+\hline
+POST & /api/candidate/quizzes/\{id\}/start & Start quiz attempt \\
+\hline
+GET & /api/candidate/quizzes/\{id\} & Get quiz questions \\
+\hline
+POST & /api/candidate/quizzes/submit & Submit answers \\
+\hline
+GET & /api/candidate/quizzes/my-attempts & View attempt history \\
+\hline
+GET & /api/candidate/quizzes/attempts/\{id\} & View attempt result \\
+\hline
+\end{tabular}
+\caption{Candidate Endpoints}
+\end{table}
+
+\subsection{POST Submit Quiz}
+
+\begin{lstlisting}[caption=Submit Quiz Endpoint]
+@PostMapping(''/submit'')
+@Operation(summary = ''Submit quiz answers'', 
+           description = ''Submit all answers and get evaluated results'')
+public ResponseEntity<AttemptResponse> submitQuiz(
+        @Valid @RequestBody SubmitQuizRequest request,
+        Authentication authentication) {
+    String candidateEmail = authentication.getName();
+    return ResponseEntity.ok(
+        candidateService.submitQuiz(request, candidateEmail));
+}
+\end{lstlisting}
+
+\textbf{Request Body:}
+\begin{lstlisting}[language=json]
+{
+  ''attemptId'': 1,
+  ''answers'': [
+    {
+      ''questionId'': 1,
+      ''selectedOptionId'': 3,
+      ''textAnswer'': null
+    }
+  ]
+}
+\end{lstlisting}
+
+\section{HTTP Status Codes Used}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Code} & \textbf{Status} & \textbf{Usage} \\
+\hline
+200 & OK & Successful GET, PUT, POST operations \\
+\hline
+201 & Created & Successful resource creation \\
+\hline
+204 & No Content & Successful DELETE operation \\
+\hline
+400 & Bad Request & Validation errors \\
+\hline
+401 & Unauthorized & Missing/invalid JWT token \\
+\hline
+403 & Forbidden & Insufficient permissions \\
+\hline
+404 & Not Found & Resource not found \\
+\hline
+500 & Internal Server Error & Unexpected server errors \\
+\hline
+\end{tabular}
+\caption{HTTP Status Codes}
+\end{table}
+

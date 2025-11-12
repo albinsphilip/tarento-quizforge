@@ -1,0 +1,382 @@
+% Chapter 9: ER Diagram
+\chapter{Entity-Relationship Diagram}
+
+\section{Complete ER Diagram}
+
+\begin{landscape}
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=3cm,
+    entity/.style={rectangle, draw=blue!60, fill=blue!20, thick, minimum width=6cm, align=center},
+    relationship/.style={-{Stealth[length=3mm]}, thick},
+    every node/.style={font=\small}
+]
+    
+    % User Entity
+    \node[entity] (user) {
+        \begin{tabular}{c}
+            \textbf{USER} \\
+            \hline
+            \underline{id}: BIGINT \\
+            email: VARCHAR(255) \\
+            password: VARCHAR(255) \\
+            name: VARCHAR(255) \\
+            role: VARCHAR(50) \\
+            created\_at: TIMESTAMP
+        \end{tabular}
+    };
+    
+    % Quiz Entity
+    \node[entity, right=of user] (quiz) {
+        \begin{tabular}{c}
+            \textbf{QUIZ} \\
+            \hline
+            \underline{id}: BIGINT \\
+            title: VARCHAR(255) \\
+            description: TEXT \\
+            duration: INTEGER \\
+            is\_active: BOOLEAN \\
+            created\_by: BIGINT (FK) \\
+            created\_at: TIMESTAMP \\
+            updated\_at: TIMESTAMP
+        \end{tabular}
+    };
+    
+    % Question Entity
+    \node[entity, below=of quiz] (question) {
+        \begin{tabular}{c}
+            \textbf{QUESTION} \\
+            \hline
+            \underline{id}: BIGINT \\
+            quiz\_id: BIGINT (FK) \\
+            question\_text: TEXT \\
+            type: VARCHAR(50) \\
+            points: INTEGER
+        \end{tabular}
+    };
+    
+    % Option Entity
+    \node[entity, right=of question] (option) {
+        \begin{tabular}{c}
+            \textbf{OPTION} \\
+            \hline
+            \underline{id}: BIGINT \\
+            question\_id: BIGINT (FK) \\
+            option\_text: VARCHAR(255) \\
+            is\_correct: BOOLEAN
+        \end{tabular}
+    };
+    
+    % QuizAttempt Entity
+    \node[entity, below=of user] (attempt) {
+        \begin{tabular}{c}
+            \textbf{QUIZ\_ATTEMPT} \\
+            \hline
+            \underline{id}: BIGINT \\
+            quiz\_id: BIGINT (FK) \\
+            user\_id: BIGINT (FK) \\
+            started\_at: TIMESTAMP \\
+            submitted\_at: TIMESTAMP \\
+            score: INTEGER \\
+            total\_points: INTEGER \\
+            status: VARCHAR(50)
+        \end{tabular}
+    };
+    
+    % Answer Entity
+    \node[entity, below=of attempt] (answer) {
+        \begin{tabular}{c}
+            \textbf{ANSWER} \\
+            \hline
+            \underline{id}: BIGINT \\
+            attempt\_id: BIGINT (FK) \\
+            question\_id: BIGINT (FK) \\
+            selected\_option\_id: BIGINT (FK) \\
+            text\_answer: TEXT \\
+            is\_correct: BOOLEAN \\
+            points\_earned: INTEGER
+        \end{tabular}
+    };
+    
+    % Relationships
+    \draw[relationship] (quiz) -- (user) node[midway, above, font=\tiny] {created by} node[midway, below, font=\tiny] {N:1};
+    \draw[relationship] (question) -- (quiz) node[midway, right, font=\tiny] {belongs to} node[midway, left, font=\tiny] {N:1};
+    \draw[relationship] (option) -- (question) node[midway, above, font=\tiny] {belongs to} node[midway, below, font=\tiny] {N:1};
+    \draw[relationship] (attempt) -- (quiz) node[midway, right, font=\tiny] {attempts} node[midway, left, font=\tiny] {N:1};
+    \draw[relationship] (attempt) -- (user) node[midway, left, font=\tiny] {taken by} node[midway, right, font=\tiny] {N:1};
+    \draw[relationship] (answer) -- (attempt) node[midway, right, font=\tiny] {part of} node[midway, left, font=\tiny] {N:1};
+    \draw[relationship] (answer) -- (question) node[midway, below, font=\tiny] {answers} node[midway, above, font=\tiny] {N:1};
+    \draw[relationship] (answer) -- (option) node[midway, below, font=\tiny] {selects} node[midway, above, font=\tiny] {N:1};
+    
+\end{tikzpicture}
+\caption{Complete Entity-Relationship Diagram}
+\end{figure}
+\end{landscape}
+
+\section{Relationship Details}
+
+\subsection{User $\rightarrow$ Quiz (created\_by)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Type} & One-to-Many \\
+\hline
+\textbf{Cardinality} & 1 User : N Quizzes \\
+\hline
+\textbf{Direction} & Unidirectional (Quiz $\rightarrow$ User) \\
+\hline
+\textbf{Foreign Key} & quizzes.created\_by $\rightarrow$ users.id \\
+\hline
+\textbf{On Delete} & Depends on business rule (typically RESTRICT) \\
+\hline
+\textbf{Description} & Each quiz is created by exactly one admin user. A user (admin) can create multiple quizzes. \\
+\hline
+\textbf{JPA Mapping} & @ManyToOne(fetch = FetchType.LAZY) in Quiz \\
+\hline
+\end{tabular}
+\caption{User-Quiz Relationship}
+\end{table}
+
+\textbf{SQL Constraint:}
+\begin{lstlisting}[language=SQL]
+ALTER TABLE quizzes
+ADD CONSTRAINT fk_quiz_created_by
+FOREIGN KEY (created_by) REFERENCES users(id);
+\end{lstlisting}
+
+\subsection{Quiz $\leftrightarrow$ Question}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Type} & One-to-Many (Bidirectional) \\
+\hline
+\textbf{Cardinality} & 1 Quiz : N Questions \\
+\hline
+\textbf{Foreign Key} & questions.quiz\_id $\rightarrow$ quizzes.id \\
+\hline
+\textbf{Cascade} & ALL (persist, merge, remove, refresh, detach) \\
+\hline
+\textbf{Orphan Removal} & true (delete questions if removed from list) \\
+\hline
+\textbf{Description} & Each question belongs to exactly one quiz. A quiz contains multiple questions. When a quiz is deleted, all its questions are automatically deleted. \\
+\hline
+\textbf{JPA Mapping} & @OneToMany in Quiz, @ManyToOne in Question \\
+\hline
+\end{tabular}
+\caption{Quiz-Question Relationship}
+\end{table}
+
+\textbf{SQL Constraint:}
+\begin{lstlisting}[language=SQL]
+ALTER TABLE questions
+ADD CONSTRAINT fk_question_quiz
+FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
+ON DELETE CASCADE;
+\end{lstlisting}
+
+\subsection{Question $\leftrightarrow$ Option}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Type} & One-to-Many (Bidirectional) \\
+\hline
+\textbf{Cardinality} & 1 Question : N Options \\
+\hline
+\textbf{Foreign Key} & options.question\_id $\rightarrow$ questions.id \\
+\hline
+\textbf{Cascade} & ALL \\
+\hline
+\textbf{Orphan Removal} & true \\
+\hline
+\textbf{Description} & Each option belongs to exactly one question. A question can have multiple options (typically 4-5 for multiple choice). Options are deleted when question is deleted. \\
+\hline
+\textbf{JPA Mapping} & @OneToMany in Question, @ManyToOne in Option \\
+\hline
+\end{tabular}
+\caption{Question-Option Relationship}
+\end{table}
+
+\subsection{Quiz $\rightarrow$ QuizAttempt}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Type} & One-to-Many \\
+\hline
+\textbf{Cardinality} & 1 Quiz : N Attempts \\
+\hline
+\textbf{Foreign Key} & quiz\_attempts.quiz\_id $\rightarrow$ quizzes.id \\
+\hline
+\textbf{Description} & Each attempt is for exactly one quiz. A quiz can have multiple attempts from different candidates. \\
+\hline
+\textbf{Business Rule} & Typically prevent quiz deletion if attempts exist \\
+\hline
+\end{tabular}
+\caption{Quiz-Attempt Relationship}
+\end{table}
+
+\subsection{User $\rightarrow$ QuizAttempt}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Type} & One-to-Many \\
+\hline
+\textbf{Cardinality} & 1 User : N Attempts \\
+\hline
+\textbf{Foreign Key} & quiz\_attempts.user\_id $\rightarrow$ users.id \\
+\hline
+\textbf{Description} & Each attempt is taken by exactly one candidate. A candidate can take multiple quizzes and can retake the same quiz multiple times. \\
+\hline
+\end{tabular}
+\caption{User-Attempt Relationship}
+\end{table}
+
+\subsection{QuizAttempt $\leftrightarrow$ Answer}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Type} & One-to-Many (Bidirectional) \\
+\hline
+\textbf{Cardinality} & 1 Attempt : N Answers \\
+\hline
+\textbf{Foreign Key} & answers.attempt\_id $\rightarrow$ quiz\_attempts.id \\
+\hline
+\textbf{Cascade} & ALL \\
+\hline
+\textbf{Orphan Removal} & true \\
+\hline
+\textbf{Description} & Each answer belongs to exactly one attempt. An attempt contains multiple answers (one per question). Answers are deleted when attempt is deleted. \\
+\hline
+\end{tabular}
+\caption{Attempt-Answer Relationship}
+\end{table}
+
+\subsection{Question $\rightarrow$ Answer}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Type} & One-to-Many \\
+\hline
+\textbf{Cardinality} & 1 Question : N Answers \\
+\hline
+\textbf{Foreign Key} & answers.question\_id $\rightarrow$ questions.id \\
+\hline
+\textbf{Description} & Each answer is for exactly one question. A question can have many answers across different attempts. \\
+\hline
+\end{tabular}
+\caption{Question-Answer Relationship}
+\end{table}
+
+\subsection{Option $\rightarrow$ Answer}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Type} & One-to-Many (Optional) \\
+\hline
+\textbf{Cardinality} & 1 Option : N Answers \\
+\hline
+\textbf{Foreign Key} & answers.selected\_option\_id $\rightarrow$ options.id (NULLABLE) \\
+\hline
+\textbf{Description} & For multiple-choice questions, an answer references the selected option. For short-answer questions, this field is null. An option can be selected by multiple candidates. \\
+\hline
+\end{tabular}
+\caption{Option-Answer Relationship}
+\end{table}
+
+\section{Database Constraints}
+
+\subsection{Primary Keys}
+
+All tables use auto-incrementing BIGINT primary keys:
+\begin{itemize}
+    \item BIGSERIAL in PostgreSQL
+    \item GenerationType.IDENTITY in JPA
+    \item Range: -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807
+\end{itemize}
+
+\subsection{Foreign Key Constraints}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Table} & \textbf{FK Column} & \textbf{References} \\
+\hline
+quizzes & created\_by & users(id) \\
+\hline
+questions & quiz\_id & quizzes(id) \\
+\hline
+options & question\_id & questions(id) \\
+\hline
+quiz\_attempts & quiz\_id & quizzes(id) \\
+\hline
+quiz\_attempts & user\_id & users(id) \\
+\hline
+answers & attempt\_id & quiz\_attempts(id) \\
+\hline
+answers & question\_id & questions(id) \\
+\hline
+answers & selected\_option\_id & options(id) \\
+\hline
+\end{tabular}
+\caption{Foreign Key Summary}
+\end{table}
+
+\subsection{Unique Constraints}
+
+\begin{itemize}
+    \item \textbf{users.email}: Must be unique (used for authentication)
+\end{itemize}
+
+\subsection{Not Null Constraints}
+
+Critical fields that cannot be null:
+\begin{itemize}
+    \item All primary keys
+    \item All foreign keys (except answers.selected\_option\_id)
+    \item users: email, password, name, role, created\_at
+    \item quizzes: title, duration, is\_active, created\_by
+    \item questions: quiz\_id, question\_text, type, points
+    \item options: question\_id, option\_text, is\_correct
+    \item quiz\_attempts: quiz\_id, user\_id, started\_at, status
+    \item answers: attempt\_id, question\_id, is\_correct
+\end{itemize}
+
+\section{Indexes}
+
+Recommended indexes for performance:
+
+\begin{lstlisting}[language=SQL]
+-- Email lookup for authentication
+CREATE INDEX idx_users_email ON users(email);
+
+-- Active quiz queries
+CREATE INDEX idx_quizzes_is_active ON quizzes(is_active);
+
+-- User attempt history
+CREATE INDEX idx_quiz_attempts_user_id ON quiz_attempts(user_id);
+
+-- Quiz analytics
+CREATE INDEX idx_quiz_attempts_quiz_id ON quiz_attempts(quiz_id);
+
+-- Attempt status filtering
+CREATE INDEX idx_quiz_attempts_status ON quiz_attempts(status);
+\end{lstlisting}
+

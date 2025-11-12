@@ -1,0 +1,313 @@
+% Chapter 5: Services (Part 1)
+\chapter{Service Layer}
+
+\section{Overview}
+
+The service layer contains business logic and orchestrates operations between controllers and repositories. Services are transactional and handle data transformation between entities and DTOs.
+
+\section{AuthService}
+
+\subsection{Purpose}
+Handles authentication logic and JWT token generation. Simplified for demonstration with role-based access.
+
+\subsection{Complete Source Code}
+
+\begin{lstlisting}[caption=AuthService.java - Complete Implementation]
+package com.quizforge.service;
+
+import com.quizforge.dto.LoginRequest;
+import com.quizforge.dto.LoginResponse;
+import com.quizforge.model.User;
+import com.quizforge.repository.UserRepository;
+import com.quizforge.security.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AuthService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    public LoginResponse login(LoginRequest request) {
+        // Dummy authentication logic
+        // admin@quizforge.com -> ADMIN role
+        // any other email -> CANDIDATE role
+        
+        User.Role role;
+        String name;
+        
+        if (''admin@quizforge.com''.equals(request.email())) {
+            role = User.Role.ADMIN;
+            name = ''Admin User'';
+        } else {
+            role = User.Role.CANDIDATE;
+            name = ''Candidate User'';
+        }
+        
+        String token = jwtUtil.generateToken(request.email(), 
+                                             role.name());
+        
+        return new LoginResponse(token, request.email(), name, 
+                                role.name());
+    }
+}
+\end{lstlisting}
+
+\subsection{Line-by-Line Explanation}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Line 12: @Service Annotation}
+    \begin{itemize}
+        \item Marks class as Spring service bean
+        \item Component scanning auto-detection
+        \item Enables transaction management
+        \item Semantic indicator of service layer
+    \end{itemize}
+    
+    \item \textbf{Line 15-22: Dependency Injection}
+    \begin{itemize}
+        \item \texttt{@Autowired}: Spring automatically injects dependencies
+        \item \texttt{UserRepository}: For user database operations
+        \item \texttt{PasswordEncoder}: BCrypt password hashing (unused in demo)
+        \item \texttt{JwtUtil}: JWT token generation and validation
+    \end{itemize}
+    
+    \item \textbf{Line 24: login Method Signature}
+    \begin{itemize}
+        \item Takes \texttt{LoginRequest} DTO with email and password
+        \item Returns \texttt{LoginResponse} with token and user info
+        \item Public method called by AuthController
+    \end{itemize}
+    
+    \item \textbf{Line 25-27: Authentication Comment}
+    \begin{itemize}
+        \item Explains simplified authentication logic
+        \item Production would verify against database
+        \item Production would validate password hash
+    \end{itemize}
+    
+    \item \textbf{Line 29-30: Variable Declaration}
+    \begin{itemize}
+        \item \texttt{role}: Will be ADMIN or CANDIDATE
+        \item \texttt{name}: Display name for response
+    \end{itemize}
+    
+    \item \textbf{Line 32-38: Role Assignment Logic}
+    \begin{itemize}
+        \item If email is ''admin@quizforge.com'', assign ADMIN role
+        \item Otherwise, assign CANDIDATE role
+        \item Simple demo logic for quick testing
+        \item Real implementation would query database
+    \end{itemize}
+    
+    \item \textbf{Line 40-41: Token Generation}
+    \begin{itemize}
+        \item Calls \texttt{jwtUtil.generateToken(email, role)}
+        \item Creates signed JWT with email and role claims
+        \item Token valid for duration specified in properties
+        \item Used for subsequent authenticated requests
+    \end{itemize}
+    
+    \item \textbf{Line 43-44: Response Creation}
+    \begin{itemize}
+        \item Creates \texttt{LoginResponse} DTO
+        \item Includes: token, email, name, role
+        \item Record type provides immutability
+        \item Returned to controller, then client
+    \end{itemize}
+\end{itemize}
+
+\subsection{Production Implementation Notes}
+
+In a production system, the login method would:
+
+\begin{enumerate}
+    \item Query database for user by email
+    \item Verify user exists
+    \item Compare password hash using PasswordEncoder
+    \item Check if account is active/not locked
+    \item Log login attempt
+    \item Handle failed login attempts
+    \item Implement rate limiting
+\end{enumerate}
+
+\begin{lstlisting}[caption=Production Login Implementation Example]
+public LoginResponse login(LoginRequest request) {
+    User user = userRepository.findByEmail(request.email())
+        .orElseThrow(() -> new BadCredentialsException(
+            ''Invalid credentials''));
+    
+    if (!passwordEncoder.matches(request.password(), 
+                                  user.getPassword())) {
+        throw new BadCredentialsException(''Invalid credentials'');
+    }
+    
+    String token = jwtUtil.generateToken(user.getEmail(), 
+                                        user.getRole().name());
+    
+    return new LoginResponse(token, user.getEmail(), 
+                            user.getName(), user.getRole().name());
+}
+\end{lstlisting}
+
+\section{AdminService}
+
+\subsection{Purpose}
+Handles all admin operations including quiz CRUD operations and analytics.
+
+\subsection{Dependencies}
+
+\begin{lstlisting}[caption=AdminService Dependencies]
+@Autowired
+private QuizRepository quizRepository;
+
+@Autowired
+private QuestionRepository questionRepository;
+
+@Autowired
+private UserRepository userRepository;
+
+@Autowired
+private QuizAttemptRepository attemptRepository;
+\end{lstlisting}
+
+\subsection{Method: getAllQuizzes}
+
+\begin{lstlisting}[caption=Get All Quizzes]
+public List<QuizSummaryResponse> getAllQuizzes() {
+    return quizRepository.findAll().stream()
+            .map(this::toSummaryResponse)
+            .collect(Collectors.toList());
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Retrieves all quizzes from database
+    \item Uses Java Stream API for transformation
+    \item Maps each Quiz entity to QuizSummaryResponse DTO
+    \item Returns list of summaries (not full quiz with questions)
+\end{itemize}
+
+\subsection{Method: getQuizById}
+
+\begin{lstlisting}[caption=Get Quiz by ID]
+public QuizResponse getQuizById(Long id) {
+    Quiz quiz = quizRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException(''Quiz not found''));
+    return toDetailedResponse(quiz);
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Fetches quiz by ID
+    \item \texttt{Optional.orElseThrow()}: Throws exception if not found
+    \item Returns detailed response with all questions and options
+    \item Includes correct answers (admin view)
+\end{itemize}
+
+\subsection{Method: createQuiz (Part 1)}
+
+\begin{lstlisting}[caption=Create Quiz - Method Start]
+@Transactional
+public QuizResponse createQuiz(QuizRequest request, 
+                              String adminEmail) {
+    User admin = userRepository.findByEmail(adminEmail)
+            .orElseGet(() -> {
+                // Create dummy admin user if not exists
+                User newAdmin = new User();
+                newAdmin.setEmail(adminEmail);
+                newAdmin.setName(''Admin'');
+                newAdmin.setPassword(''dummy'');
+                newAdmin.setRole(User.Role.ADMIN);
+                return userRepository.save(newAdmin);
+            });
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{@Transactional}: Ensures atomic operation
+    \item Looks up admin user by email
+    \item If user doesn't exist, creates new admin (demo logic)
+    \item In production, user should already exist from registration
+\end{itemize}
+
+\subsection{Method: createQuiz (Part 2 - Entity Creation)}
+
+\begin{lstlisting}[caption=Create Quiz - Entity Setup]
+    Quiz quiz = new Quiz();
+    quiz.setTitle(request.title());
+    quiz.setDescription(request.description());
+    quiz.setDuration(request.duration());
+    quiz.setIsActive(request.isActive() != null ? 
+                    request.isActive() : true);
+    quiz.setCreatedBy(admin);
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Creates new Quiz entity
+    \item Sets properties from QuizRequest DTO
+    \item Default isActive to true if not provided
+    \item Links quiz to admin user
+\end{itemize}
+
+\subsection{Method: createQuiz (Part 3 - Questions)}
+
+\begin{lstlisting}[caption=Create Quiz - Questions Loop]
+    if (request.questions() != null) {
+        for (QuestionRequest qReq : request.questions()) {
+            Question question = new Question();
+            question.setQuestionText(qReq.questionText());
+            question.setType(Question.QuestionType.valueOf(
+                qReq.type()));
+            question.setPoints(qReq.points() != null ? 
+                qReq.points() : 1);
+            question.setQuiz(quiz);
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Iterates through questions in request
+    \item Creates Question entity for each
+    \item Converts string type to QuestionType enum
+    \item Defaults points to 1 if not specified
+    \item Establishes bidirectional relationship with quiz
+\end{itemize}
+
+\subsection{Method: createQuiz (Part 4 - Options)}
+
+\begin{lstlisting}[caption=Create Quiz - Options Loop]
+            if (qReq.options() != null) {
+                for (OptionRequest oReq : qReq.options()) {
+                    Option option = new Option();
+                    option.setOptionText(oReq.optionText());
+                    option.setIsCorrect(oReq.isCorrect());
+                    option.setQuestion(question);
+                    question.getOptions().add(option);
+                }
+            }
+            quiz.getQuestions().add(question);
+        }
+    }
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Nested loop for options within each question
+    \item Creates Option entity for each choice
+    \item Sets correct answer flag
+    \item Establishes question relationship
+    \item Adds option to question's list
+    \item Adds question to quiz's list
+\end{itemize}
+

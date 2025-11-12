@@ -1,0 +1,244 @@
+% Chapter 2: Architecture
+\chapter{System Architecture}
+
+\section{Layered Architecture}
+
+QuizForge implements a classic n-tier architecture with clear separation of concerns:
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    layer/.style={rectangle, draw, fill=blue!20, text width=10cm, text centered, minimum height=1cm},
+    arrow/.style={->, >=stealth, thick}
+]
+    \node[layer] (presentation) at (0,0) {\textbf{Presentation Layer} \\ Controllers, DTOs, REST Endpoints};
+    \node[layer] (business) at (0,-2) {\textbf{Business Logic Layer} \\ Services, Business Rules};
+    \node[layer] (data) at (0,-4) {\textbf{Data Access Layer} \\ Repositories, JPA};
+    \node[layer] (database) at (0,-6) {\textbf{Database Layer} \\ PostgreSQL};
+    \node[layer] (security) at (6,-2) {\textbf{Security Layer} \\ JWT, Filters, Config};
+    
+    \draw[arrow] (presentation) -- (business);
+    \draw[arrow] (business) -- (data);
+    \draw[arrow] (data) -- (database);
+    \draw[arrow] (security) -- (business);
+\end{tikzpicture}
+\caption{System Architecture Layers}
+\end{figure}
+
+\subsection{Layer Responsibilities}
+
+\subsubsection{Presentation Layer}
+\begin{itemize}
+    \item \textbf{Controllers:} Handle HTTP requests and responses
+    \item \textbf{DTOs:} Transfer data between client and server
+    \item \textbf{Validation:} Input validation using Bean Validation
+    \item \textbf{Error Handling:} Exception handling and error responses
+\end{itemize}
+
+\subsubsection{Business Logic Layer}
+\begin{itemize}
+    \item \textbf{Services:} Implement core business logic
+    \item \textbf{Transactions:} Manage database transactions
+    \item \textbf{Data Transformation:} Convert between entities and DTOs
+    \item \textbf{Business Rules:} Enforce application rules and constraints
+\end{itemize}
+
+\subsubsection{Data Access Layer}
+\begin{itemize}
+    \item \textbf{Repositories:} Abstract database operations
+    \item \textbf{JPA Entities:} Map to database tables
+    \item \textbf{Query Methods:} Define custom queries
+    \item \textbf{Relationship Management:} Handle entity associations
+\end{itemize}
+
+\subsubsection{Security Layer}
+\begin{itemize}
+    \item \textbf{JWT Authentication:} Token generation and validation
+    \item \textbf{Authorization:} Role-based access control
+    \item \textbf{Filters:} Request/response interception
+    \item \textbf{CORS:} Cross-origin resource sharing
+\end{itemize}
+
+\section{Request Flow}
+
+The typical request flow through the application:
+
+\begin{enumerate}
+    \item \textbf{Client Request:} HTTP request arrives at the server
+    \item \textbf{JWT Filter:} JwtRequestFilter validates the JWT token
+    \item \textbf{Security Context:} Authentication is set in SecurityContext
+    \item \textbf{Controller:} Request is routed to appropriate controller method
+    \item \textbf{Validation:} Input is validated against constraints
+    \item \textbf{Service Layer:} Business logic is executed
+    \item \textbf{Repository:} Database operations are performed
+    \item \textbf{Response:} DTO is created and returned to client
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    box/.style={rectangle, draw, fill=yellow!20, text width=3cm, text centered, minimum height=0.8cm, rounded corners},
+    arrow/.style={->, >=stealth, thick}
+]
+    \node[box] (client) {Client};
+    \node[box, below of=client] (filter) {JWT Filter};
+    \node[box, below of=filter] (security) {Security Check};
+    \node[box, below of=security] (controller) {Controller};
+    \node[box, below of=controller] (service) {Service};
+    \node[box, below of=service] (repository) {Repository};
+    \node[box, below of=repository] (database) {Database};
+    
+    \draw[arrow] (client) -- node[right] {HTTP Request} (filter);
+    \draw[arrow] (filter) -- node[right] {Validate Token} (security);
+    \draw[arrow] (security) -- node[right] {Authorized} (controller);
+    \draw[arrow] (controller) -- node[right] {Business Logic} (service);
+    \draw[arrow] (service) -- node[right] {Data Access} (repository);
+    \draw[arrow] (repository) -- node[right] {SQL Query} (database);
+    
+    \draw[arrow] (database.east) -- ++(1,0) |- node[right, near start] {Result} (repository.east);
+    \draw[arrow] (repository.west) -- ++(-1,0) |- node[left, near start] {Entity} (service.west);
+    \draw[arrow] (service.east) -- ++(1.5,0) |- node[right, near start] {DTO} (controller.east);
+    \draw[arrow] (controller.west) -- ++(-1.5,0) |- node[left, near start] {JSON Response} (client.west);
+\end{tikzpicture}
+\caption{Request Flow Diagram}
+\end{figure}
+
+\section{Component Interaction}
+
+\subsection{Authentication Flow}
+
+\begin{lstlisting}[caption=Authentication Sequence]
+1. User sends credentials to /api/auth/login
+2. AuthController receives request
+3. AuthService validates credentials (simplified for demo)
+4. JwtUtil generates JWT token with role
+5. LoginResponse with token returned to user
+6. User includes token in Authorization header for subsequent requests
+7. JwtRequestFilter extracts and validates token
+8. SecurityContext populated with authentication
+9. Request proceeds to controller with authenticated user
+\end{lstlisting}
+
+\subsection{Quiz Creation Flow}
+
+\begin{lstlisting}[caption=Quiz Creation Sequence]
+1. Admin sends POST request to /api/admin/quizzes
+2. JWT filter validates admin role
+3. AdminController receives QuizRequest
+4. Bean validation checks input constraints
+5. AdminService.createQuiz() called
+6. User entity fetched or created
+7. Quiz entity created with questions and options
+8. CascadeType.ALL persists entire object graph
+9. QuizRepository.save() persists to database
+10. Entity converted to QuizResponse DTO
+11. JSON response returned to client
+\end{lstlisting}
+
+\subsection{Quiz Taking Flow}
+
+\begin{lstlisting}[caption=Quiz Taking Sequence]
+1. Candidate requests quiz list: GET /api/candidate/quizzes
+2. Active quizzes returned without correct answers
+3. Candidate starts quiz: POST /api/candidate/quizzes/{id}/start
+4. QuizAttempt entity created with IN_PROGRESS status
+5. Candidate retrieves questions: GET /api/candidate/quizzes/{id}
+6. Questions returned with options (isCorrect hidden)
+7. Candidate submits answers: POST /api/candidate/quizzes/submit
+8. Answers evaluated against correct options
+9. Score calculated and QuizAttempt updated to EVALUATED
+10. Results returned to candidate
+\end{lstlisting}
+
+\section{Design Decisions}
+
+\subsection{Why Spring Boot 3.2.0?}
+
+\begin{itemize}
+    \item Native support for Java 21 features
+    \item Enhanced observability and monitoring
+    \item Improved startup time and memory efficiency
+    \item Built-in support for modern standards
+    \item Jakarta EE 10 migration complete
+\end{itemize}
+
+\subsection{Why PostgreSQL?}
+
+\begin{itemize}
+    \item ACID compliance for data integrity
+    \item Advanced indexing capabilities
+    \item JSON support for flexible data
+    \item Excellent performance with JPA
+    \item Wide community support
+\end{itemize}
+
+\subsection{Why JWT Authentication?}
+
+\begin{itemize}
+    \item Stateless authentication (no server-side sessions)
+    \item Scalable across multiple servers
+    \item Works well with SPAs and mobile apps
+    \item Industry-standard approach
+    \item Easy to implement role-based access
+\end{itemize}
+
+\subsection{Why Lombok?}
+
+\begin{itemize}
+    \item Reduces boilerplate code significantly
+    \item Automatic getters, setters, constructors
+    \item Builder pattern implementation
+    \item Cleaner, more readable code
+    \item Compile-time code generation
+\end{itemize}
+
+\section{Scalability Considerations}
+
+\subsection{Horizontal Scalability}
+\begin{itemize}
+    \item Stateless JWT authentication enables load balancing
+    \item No session affinity required
+    \item Database connection pooling
+    \item Can deploy multiple instances behind load balancer
+\end{itemize}
+
+\subsection{Database Optimization}
+\begin{itemize}
+    \item Lazy loading for relationships (LAZY fetch type)
+    \item Indexed columns for frequent queries
+    \item Batch operations for bulk inserts
+    \item Connection pool configuration
+\end{itemize}
+
+\subsection{Caching Opportunities}
+\begin{itemize}
+    \item Quiz data (rarely changes)
+    \item User information
+    \item Query results for analytics
+    \item Second-level cache with Hibernate
+\end{itemize}
+
+\section{Error Handling Strategy}
+
+The application handles errors at multiple levels:
+
+\begin{enumerate}
+    \item \textbf{Validation Errors:} Bean Validation catches invalid inputs
+    \item \textbf{Business Logic Errors:} Services throw RuntimeException with messages
+    \item \textbf{Security Errors:} JWT filter returns 401 Unauthorized
+    \item \textbf{Database Errors:} JPA handles constraint violations
+    \item \textbf{Global Exception Handler:} Can be added for centralized error handling
+\end{enumerate}
+
+\section{Transaction Management}
+
+Spring's declarative transaction management is used:
+
+\begin{itemize}
+    \item \texttt{@Transactional} annotation on service methods
+    \item Automatic rollback on RuntimeException
+    \item Propagation defaults to REQUIRED
+    \item Isolation level defaults to database default
+\end{itemize}
+

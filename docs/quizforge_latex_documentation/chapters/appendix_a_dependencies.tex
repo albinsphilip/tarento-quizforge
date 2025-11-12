@@ -1,0 +1,413 @@
+% Appendix A: Dependencies
+\chapter{Complete Dependency List}
+
+\section{Core Spring Boot Dependencies}
+
+\subsection{Spring Boot Starter Web}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+\end{lstlisting}
+
+\textbf{Includes:}
+\begin{itemize}
+    \item Spring MVC for REST APIs
+    \item Embedded Tomcat server
+    \item Jackson for JSON serialization
+    \item Spring Web utilities
+\end{itemize}
+
+\subsection{Spring Boot Starter Security}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+\end{lstlisting}
+
+\textbf{Includes:}
+\begin{itemize}
+    \item Spring Security Core
+    \item Authentication mechanisms
+    \item Authorization framework
+    \item CSRF protection
+    \item Security filters
+\end{itemize}
+
+\subsection{Spring Boot Starter Data JPA}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+\end{lstlisting}
+
+\textbf{Includes:}
+\begin{itemize}
+    \item Hibernate ORM
+    \item Spring Data JPA
+    \item Jakarta Persistence API
+    \item Connection pooling (HikariCP)
+    \item Transaction management
+\end{itemize}
+
+\subsection{Spring Boot Starter Validation}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-validation</artifactId>
+</dependency>
+\end{lstlisting}
+
+\textbf{Includes:}
+\begin{itemize}
+    \item Jakarta Bean Validation API
+    \item Hibernate Validator implementation
+    \item Annotations: @NotNull, @NotBlank, @Email, @Min, @Max, etc.
+\end{itemize}
+
+\section{JWT Dependencies}
+
+\subsection{JJWT API}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.5</version>
+</dependency>
+\end{lstlisting}
+
+\textbf{Purpose:} JWT token creation and parsing API
+
+\subsection{JJWT Implementation}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope>
+</dependency>
+\end{lstlisting}
+
+\textbf{Purpose:} Runtime implementation of JJWT
+
+\subsection{JJWT Jackson Integration}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope>
+</dependency>
+\end{lstlisting}
+
+\textbf{Purpose:} JSON serialization for JWT claims
+
+\section{Database Dependencies}
+
+\subsection{PostgreSQL JDBC Driver}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <scope>runtime</scope>
+</dependency>
+\end{lstlisting}
+
+\textbf{Version:} Managed by Spring Boot (42.x)
+
+\textbf{Purpose:}
+\begin{itemize}
+    \item JDBC connection to PostgreSQL
+    \item Type mappings
+    \item PostgreSQL-specific features
+\end{itemize}
+
+\section{Documentation Dependencies}
+
+\subsection{SpringDoc OpenAPI}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.6.0</version>
+</dependency>
+\end{lstlisting}
+
+\textbf{Features:}
+\begin{itemize}
+    \item OpenAPI 3.0 specification generation
+    \item Swagger UI integration
+    \item Automatic API documentation
+    \item Interactive API testing
+\end{itemize}
+
+\textbf{Annotations Used:}
+\begin{itemize}
+    \item @Tag - Controller grouping
+    \item @Operation - Endpoint documentation
+    \item @SecurityRequirement - Auth requirements
+    \item @Schema - DTO documentation
+\end{itemize}
+
+\section{Utility Dependencies}
+
+\subsection{Lombok}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <optional>true</optional>
+</dependency>
+\end{lstlisting}
+
+\textbf{Annotations Used:}
+\begin{itemize}
+    \item @Data - Generates getters, setters, toString, equals, hashCode
+    \item @NoArgsConstructor - No-argument constructor
+    \item @AllArgsConstructor - All-arguments constructor
+    \item @Builder - Builder pattern
+    \item @Slf4j - Logger instance
+\end{itemize}
+
+\textbf{IDE Setup Required:}
+\begin{itemize}
+    \item IntelliJ IDEA: Install Lombok plugin
+    \item Eclipse: Run lombok.jar installer
+    \item VS Code: Install Lombok extension
+\end{itemize}
+
+\section{Development Dependencies}
+
+\subsection{Spring Boot DevTools}
+
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+    <scope>runtime</scope>
+    <optional>true</optional>
+</dependency>
+\end{lstlisting}
+
+\textbf{Features:}
+\begin{itemize}
+    \item Automatic application restart on code changes
+    \item LiveReload browser integration
+    \item Development-time property defaults
+    \item Faster development cycle
+\end{itemize}
+
+\textbf{Note:} Not included in production builds
+
+\section{Dependency Tree}
+
+\subsection{Complete Dependency Hierarchy}
+
+\begin{verbatim}
+quizforge:1.0.0
+|------ spring-boot-starter-web:3.2.0
+|   |------ spring-boot-starter-json:3.2.0
+|   |   \`------ jackson-databind:2.15.3
+|   |------ spring-boot-starter-tomcat:3.2.0
+|   \`------ spring-web:6.1.0
+|       \`------ spring-webmvc:6.1.0
+|------ spring-boot-starter-security:3.2.0
+|   \`------ spring-security-web:6.2.0
+|       \`------ spring-security-core:6.2.0
+|------ spring-boot-starter-data-jpa:3.2.0
+|   |------ hibernate-core:6.3.1
+|   |------ spring-data-jpa:3.2.0
+|   \`------ HikariCP:5.0.1
+|------ postgresql:42.6.0
+|------ jjwt-api:0.11.5
+|   |------ jjwt-impl:0.11.5
+|   \`------ jjwt-jackson:0.11.5
+|------ springdoc-openapi-starter-webmvc-ui:2.6.0
+|   |------ swagger-ui:5.17.14
+|   \`------ swagger-core:2.2.22
+|------ lombok:1.18.30
+\`------ spring-boot-starter-validation:3.2.0
+    \`------ hibernate-validator:8.0.1
+\end{verbatim}
+
+\section{Version Compatibility Matrix}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Component} & \textbf{Version} & \textbf{Compatible With} \\
+\hline
+Spring Boot & 3.2.0 & Java 17-21 \\
+\hline
+Java & 21 & Spring Boot 3.x \\
+\hline
+PostgreSQL & 14+ & JDBC 42.x \\
+\hline
+JJWT & 0.11.5 & Java 8+ \\
+\hline
+SpringDoc & 2.6.0 & Spring Boot 3.x \\
+\hline
+Lombok & 1.18.30 & Java 21 \\
+\hline
+\end{tabular}
+\caption{Version Compatibility}
+\end{table}
+
+\section{Build Plugins}
+
+\subsection{Spring Boot Maven Plugin}
+
+\begin{lstlisting}[language=XML]
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
+\end{lstlisting}
+
+\textbf{Features:}
+\begin{itemize}
+    \item Creates executable JAR with embedded server
+    \item Dependency management
+    \item Repackaging for deployment
+    \item Run application: \texttt{mvn spring-boot:run}
+\end{itemize}
+
+\section{Maven Commands}
+
+\subsection{Common Build Commands}
+
+\begin{lstlisting}[language=bash]
+# Compile code
+mvn compile
+
+# Run tests
+mvn test
+
+# Package as JAR
+mvn package
+
+# Clean and package
+mvn clean package
+
+# Skip tests
+mvn package -DskipTests
+
+# Run application
+mvn spring-boot:run
+
+# Clean compiled files
+mvn clean
+
+# Install to local repository
+mvn install
+\end{lstlisting}
+
+\subsection{Running the Application}
+
+\textbf{Method 1: Maven Plugin}
+\begin{lstlisting}[language=bash]
+cd backend
+mvn spring-boot:run
+\end{lstlisting}
+
+\textbf{Method 2: Executable JAR}
+\begin{lstlisting}[language=bash]
+mvn package
+java -jar target/quizforge-1.0.0.jar
+\end{lstlisting}
+
+\textbf{Method 3: With Profile}
+\begin{lstlisting}[language=bash]
+java -jar target/quizforge-1.0.0.jar --spring.profiles.active=prod
+\end{lstlisting}
+
+\section{Dependency Management Best Practices}
+
+\subsection{Version Management}
+
+\begin{enumerate}
+    \item Use Spring Boot parent POM for version management
+    \item Define versions in properties section
+    \item Use dependencyManagement for consistency
+    \item Regular security updates
+\end{enumerate}
+
+\subsection{Scope Usage}
+
+\begin{itemize}
+    \item \textbf{compile (default):} Available in all classpaths
+    \item \textbf{runtime:} Required at runtime, not for compilation (e.g., JDBC drivers)
+    \item \textbf{provided:} Provided by container (e.g., servlet API)
+    \item \textbf{test:} Only for testing
+    \item \textbf{optional:} Not transitive (e.g., Lombok, DevTools)
+\end{itemize}
+
+\subsection{Avoiding Conflicts}
+
+\begin{lstlisting}[language=bash]
+# Check dependency tree
+mvn dependency:tree
+
+# Analyze dependencies
+mvn dependency:analyze
+
+# Check for updates
+mvn versions:display-dependency-updates
+\end{lstlisting}
+
+\section{Production Deployment}
+
+\subsection{Recommended Additional Dependencies}
+
+\textbf{Monitoring:}
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+\end{lstlisting}
+
+\textbf{Metrics:}
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-registry-prometheus</artifactId>
+</dependency>
+\end{lstlisting}
+
+\textbf{Database Migration:}
+\begin{lstlisting}[language=XML]
+<dependency>
+    <groupId>org.flywaydb</groupId>
+    <artifactId>flyway-core</artifactId>
+</dependency>
+\end{lstlisting}
+
+\subsection{Dockerfile Example}
+
+\begin{lstlisting}[language=Docker]
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY target/quizforge-1.0.0.jar app.jar
+EXPOSE 8080
+ENTRYPOINT [''java'', ''-jar'', ''app.jar'']
+\end{lstlisting}
+
