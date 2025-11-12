@@ -21,7 +21,7 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(
         summary = "Login and get JWT token",
-        description = "Use admin@quizforge.com for ADMIN role, any other email for CANDIDATE role. Password is ignored for now."
+        description = "Use admin@quizforge.com for ADMIN role,other email for CANDIDATE role."
     )
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authService.login(request);
