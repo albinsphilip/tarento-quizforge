@@ -1,6 +1,7 @@
 package com.quizforge.service;
 
 import com.quizforge.dto.*;
+import com.quizforge.exception.ResourceNotFoundException;
 import com.quizforge.model.*;
 import com.quizforge.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +39,10 @@ public class CandidateService {
     @Transactional
     public AttemptResponse startQuiz(Long quizId, String candidateEmail) {
         Quiz quiz = quizRepository.findById(quizId)
-                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Quiz", quizId));
 
         User candidate = userRepository.findByEmail(candidateEmail)
-                .orElseThrow(() -> new RuntimeException("Candidate user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", candidateEmail));
 
         QuizAttempt attempt = new QuizAttempt();
         attempt.setQuiz(quiz);
@@ -58,14 +59,14 @@ public class CandidateService {
 
     public QuizResponse getQuizForAttempt(Long quizId) {
         Quiz quiz = quizRepository.findById(quizId)
-                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Quiz", quizId));
         return toQuizResponseForCandidate(quiz);
     }
 
     @Transactional
     public AttemptResponse submitQuiz(SubmitQuizRequest request, String candidateEmail) {
         QuizAttempt attempt = attemptRepository.findById(request.attemptId())
-                .orElseThrow(() -> new RuntimeException("Attempt not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("QuizAttempt", request.attemptId()));
 
         if (!attempt.getUser().getEmail().equals(candidateEmail)) {
             throw new RuntimeException("Unauthorized");
@@ -79,7 +80,7 @@ public class CandidateService {
 
         for (AnswerRequest ansReq : request.answers()) {
             Question question = questionRepository.findById(ansReq.questionId())
-                    .orElseThrow(() -> new RuntimeException("Question not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Question", ansReq.questionId()));
 
             Answer answer = new Answer();
             answer.setAttempt(attempt);
@@ -89,7 +90,7 @@ public class CandidateService {
                 Option selectedOption = question.getOptions().stream()
                         .filter(o -> o.getId().equals(ansReq.selectedOptionId()))
                         .findFirst()
-                        .orElseThrow(() -> new RuntimeException("Option not found"));
+                        .orElseThrow(() -> new ResourceNotFoundException("Option", ansReq.selectedOptionId()));
 
                 answer.setSelectedOption(selectedOption);
                 answer.setIsCorrect(selectedOption.getIsCorrect());
@@ -119,7 +120,7 @@ public class CandidateService {
 
     public List<AttemptResponse> getMyAttempts(String candidateEmail) {
         User candidate = userRepository.findByEmail(candidateEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", candidateEmail));
 
         return attemptRepository.findByUserId(candidate.getId()).stream()
                 .map(this::toAttemptResponse)
@@ -128,7 +129,7 @@ public class CandidateService {
 
     public AttemptResponse getAttemptResult(Long attemptId, String candidateEmail) {
         QuizAttempt attempt = attemptRepository.findById(attemptId)
-                .orElseThrow(() -> new RuntimeException("Attempt not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("QuizAttempt", attemptId));
 
         if (!attempt.getUser().getEmail().equals(candidateEmail)) {
             throw new RuntimeException("Unauthorized");

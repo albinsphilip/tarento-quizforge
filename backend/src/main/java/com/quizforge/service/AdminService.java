@@ -1,6 +1,7 @@
 package com.quizforge.service;
 
 import com.quizforge.dto.*;
+import com.quizforge.exception.ResourceNotFoundException;
 import com.quizforge.model.*;
 import com.quizforge.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +34,14 @@ public class AdminService {
 
     public QuizResponse getQuizById(Long id) {
         Quiz quiz = quizRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Quiz", id));
         return toDetailedResponse(quiz);
     }
 
     @Transactional
     public QuizResponse createQuiz(QuizRequest request, String adminEmail) {
         User admin = userRepository.findByEmail(adminEmail)
-                .orElseThrow(() -> new RuntimeException("Admin user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", adminEmail));
 
         Quiz quiz = new Quiz();
         quiz.setTitle(request.title());
@@ -77,7 +78,7 @@ public class AdminService {
     @Transactional
     public QuizResponse updateQuiz(Long id, QuizRequest request) {
         Quiz quiz = quizRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Quiz", id));
 
         quiz.setTitle(request.title());
         quiz.setDescription(request.description());
@@ -114,13 +115,19 @@ public class AdminService {
         return toDetailedResponse(quiz);
     }
 
+    @Transactional
     public void deleteQuiz(Long id) {
-        quizRepository.deleteById(id);
+        // Check if quiz exists before deleting
+        Quiz quiz = quizRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Quiz", id));
+        
+        // Delete the quiz (cascade will handle related entities)
+        quizRepository.delete(quiz);
     }
 
     public QuizAnalyticsResponse getQuizAnalytics(Long quizId) {
         Quiz quiz = quizRepository.findById(quizId)
-                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Quiz", quizId));
 
         List<QuizAttempt> attempts = attemptRepository.findByQuizId(quizId).stream()
                 .filter(a -> a.getStatus() == QuizAttempt.AttemptStatus.EVALUATED)

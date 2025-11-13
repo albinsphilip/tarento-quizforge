@@ -2,6 +2,7 @@ package com.quizforge.service;
 
 import com.quizforge.dto.LoginRequest;
 import com.quizforge.dto.LoginResponse;
+import com.quizforge.exception.UnauthorizedException;
 import com.quizforge.model.User;
 import com.quizforge.repository.UserRepository;
 import com.quizforge.security.JwtUtil;
@@ -24,11 +25,11 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         // Find user by email
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
         
         // Verify password using BCrypt
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new RuntimeException("Invalid email or password");
+            throw new UnauthorizedException("Invalid email or password");
         }
         
         // Generate JWT token

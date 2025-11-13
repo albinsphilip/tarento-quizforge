@@ -15,6 +15,7 @@ com/quizforge/repository/QuestionRepository.class
 com/quizforge/repository/QuizRepository.class
 com/quizforge/model/Question$QuestionType.class
 com/quizforge/dto/QuestionRequest.class
+com/quizforge/exception/ResourceNotFoundException.class
 com/quizforge/model/Answer.class
 com/quizforge/dto/QuizRequest.class
 com/quizforge/model/Option.class
@@ -29,11 +30,14 @@ com/quizforge/dto/QuizResponse.class
 com/quizforge/dto/QuizAnalyticsResponse.class
 com/quizforge/model/User$Role.class
 com/quizforge/security/JwtRequestFilter.class
+com/quizforge/exception/UnauthorizedException.class
 com/quizforge/controller/AuthController.class
 com/quizforge/config/OpenApiConfig.class
 com/quizforge/model/Quiz.class
 com/quizforge/QuizForgeApplication.class
+com/quizforge/exception/GlobalExceptionHandler.class
 com/quizforge/repository/AnswerRepository.class
+com/quizforge/exception/GlobalExceptionHandler$ErrorResponse.class
 com/quizforge/service/AuthService.class
 com/quizforge/model/QuizAttempt$AttemptStatus.class
 com/quizforge/repository/QuizAttemptRepository.class
