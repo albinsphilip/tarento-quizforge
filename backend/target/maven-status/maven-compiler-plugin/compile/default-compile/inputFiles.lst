@@ -27,6 +27,7 @@
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/model/Question.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/model/User.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/exception/GlobalExceptionHandler.java
+/home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/dto/DeleteResponse.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/controller/AuthController.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/security/JwtRequestFilter.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/repository/QuizRepository.java

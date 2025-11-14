@@ -116,13 +116,15 @@ public class AdminService {
     }
 
     @Transactional
-    public void deleteQuiz(Long id) {
+    public DeleteResponse deleteQuiz(Long id) {
         // Check if quiz exists before deleting
         Quiz quiz = quizRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz", id));
         
         // Delete the quiz (cascade will handle related entities)
         quizRepository.delete(quiz);
+        
+        return new DeleteResponse("Quiz with id " + id + " deleted successfully", id);
     }
 
     public QuizAnalyticsResponse getQuizAnalytics(Long quizId) {

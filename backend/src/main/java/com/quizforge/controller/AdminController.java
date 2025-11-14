@@ -1,5 +1,6 @@
 package com.quizforge.controller;
 
+import com.quizforge.dto.DeleteResponse;
 import com.quizforge.dto.QuizAnalyticsResponse;
 import com.quizforge.dto.QuizRequest;
 import com.quizforge.dto.QuizResponse;
@@ -58,9 +59,9 @@ public class AdminController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete quiz", description = "Permanently delete a quiz")
-    public ResponseEntity<Void> deleteQuiz(@PathVariable Long id) {
-        adminService.deleteQuiz(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<DeleteResponse> deleteQuiz(@PathVariable Long id) {
+        DeleteResponse response = adminService.deleteQuiz(id);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}/analytics")

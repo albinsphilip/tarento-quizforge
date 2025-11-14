@@ -17,6 +17,7 @@ com/quizforge/model/Question$QuestionType.class
 com/quizforge/dto/QuestionRequest.class
 com/quizforge/exception/ResourceNotFoundException.class
 com/quizforge/model/Answer.class
+com/quizforge/dto/DeleteResponse.class
 com/quizforge/dto/QuizRequest.class
 com/quizforge/model/Option.class
 com/quizforge/dto/AnswerRequest.class
