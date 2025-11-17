@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { candidateAPI } from '../utils/api';
 
 const QuizTaking = () => {
   const navigate = useNavigate();
@@ -75,20 +76,8 @@ const QuizTaking = () => {
   // Start quiz attempt
   const startQuizAttempt = async () => {
     try {
-      const token = localStorage.getItem('token');
-      
       // Fetch quiz details first
-      const quizResponse = await fetch(`http://localhost:8080/api/candidate/quizzes/${quizId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!quizResponse.ok) {
-        throw new Error('Failed to fetch quiz details');
-      }
-
-      const quizData = await quizResponse.json();
+      const quizData = await candidateAPI.getQuiz(quizId);
       
       // Initialize answers object BEFORE starting attempt
       const initialAnswers = {};
@@ -104,20 +93,7 @@ const QuizTaking = () => {
       setQuiz(quizData);
       
       // Now start the attempt
-      const startResponse = await fetch(`http://localhost:8080/api/candidate/quizzes/${quizId}/start`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!startResponse.ok) {
-        const errorText = await startResponse.text();
-        throw new Error(errorText || 'Failed to start quiz');
-      }
-
-      const attemptData = await startResponse.json();
+      const attemptData = await candidateAPI.startQuiz(quizId);
       setAttemptId(attemptData.id);
       setTimeLeft(quizData.duration * 60); // Convert minutes to seconds
       setLoading(false);
@@ -225,8 +201,6 @@ const QuizTaking = () => {
   // Actual submission logic
   const submitQuizToBackend = async (showAlerts = true) => {
     try {
-      const token = localStorage.getItem('token');
-      
       // Prepare answers for submission
       const answerRequests = Object.values(answers)
         .filter(answer => answer.selectedOptionId || answer.textAnswer)
@@ -241,21 +215,7 @@ const QuizTaking = () => {
         answers: answerRequests
       };
 
-      const response = await fetch('http://localhost:8080/api/candidate/quizzes/submit', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(submitData)
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Failed to submit quiz');
-      }
-
-      const result = await response.json();
+      const result = await candidateAPI.submitQuiz(submitData);
       
       // Show success message and navigate to results
       if (showAlerts) {

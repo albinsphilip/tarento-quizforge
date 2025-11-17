@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { adminAPI } from '../utils/api';
 import QuizForm from '../components/QuizForm';
 
 const CreateQuiz = () => {
@@ -27,31 +28,25 @@ const CreateQuiz = () => {
   };
 
   const handleSubmit = async (data) => {
-    const token = localStorage.getItem('token');
-    const payload = {
-      title: data.title,
-      description: data.description,
-      duration: data.duration,
-      isActive: data.isActive,
-      questions: data.questions.map(q => ({
-        questionText: q.questionText,
-        type: q.type,
-        points: q.points,
-        options: q.options.map(o => ({ optionText: o.optionText, isCorrect: o.isCorrect }))
-      }))
-    };
+    try {
+      const payload = {
+        title: data.title,
+        description: data.description,
+        duration: data.duration,
+        isActive: data.isActive,
+        questions: data.questions.map(q => ({
+          questionText: q.questionText,
+          type: q.type,
+          points: q.points,
+          options: q.options.map(o => ({ optionText: o.optionText, isCorrect: o.isCorrect }))
+        }))
+      };
 
-    const response = await fetch('http://localhost:8080/api/admin/quizzes', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (response.ok) {
-      alert('Quiz created successfully!');
+      await adminAPI.createQuiz(payload);
+      alert('✅ Quiz created successfully!');
       navigate('/admin');
-    } else {
-      alert('Failed to create quiz');
+    } catch (error) {
+      alert('❌ Failed to create quiz: ' + error.message);
     }
   };
 
@@ -59,9 +54,18 @@ const CreateQuiz = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <h1 className="text-2xl font-bold">Create New Quiz</h1>
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
+          <button 
+            onClick={() => navigate('/admin')} 
+            className="text-gray-600 hover:text-gray-900"
+          >
+            <span className="material-symbols-outlined">arrow_back</span>
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Create New Quiz</h1>
+            <p className="text-sm text-gray-600 mt-1">Design and configure your quiz</p>
+          </div>
         </div>
       </header>
       <main className="max-w-7xl mx-auto px-6 py-8">

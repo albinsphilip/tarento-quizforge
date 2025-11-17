@@ -87,26 +87,65 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Quiz Details */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <h2 className="text-xl font-bold mb-4">Quiz Details</h2>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Title *</label>
-            <input type="text" value={quizData.title} onChange={(e) => updateQuiz('title', e.target.value)} className="w-full px-3 py-2 border rounded" required />
+      <div className="card animate-fade-in">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+            <span className="material-symbols-outlined text-blue-600">info</span>
           </div>
+          <h2 className="text-2xl font-bold text-gray-900">Quiz Details</h2>
+        </div>
+        
+        <div className="space-y-5">
           <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
-            <textarea value={quizData.description} onChange={(e) => updateQuiz('description', e.target.value)} className="w-full px-3 py-2 border rounded" rows="3" />
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Quiz Title <span className="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              value={quizData.title} 
+              onChange={(e) => updateQuiz('title', e.target.value)} 
+              className="input-field" 
+              placeholder="e.g., JavaScript Fundamentals Quiz"
+              required 
+            />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+            <textarea 
+              value={quizData.description} 
+              onChange={(e) => updateQuiz('description', e.target.value)} 
+              className="input-field resize-none" 
+              rows="3"
+              placeholder="Provide a brief description of the quiz..."
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-medium mb-1">Duration (minutes) *</label>
-              <input type="number" value={quizData.duration} onChange={(e) => updateQuiz('duration', parseInt(e.target.value))} className="w-full px-3 py-2 border rounded" min="1" required />
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Duration (minutes) <span className="text-red-500">*</span>
+              </label>
+              <input 
+                type="number" 
+                value={quizData.duration} 
+                onChange={(e) => updateQuiz('duration', parseInt(e.target.value) || 1)} 
+                className="input-field" 
+                min="1" 
+                max="180"
+                required 
+              />
             </div>
-            <div className="flex items-end">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={quizData.isActive} onChange={(e) => updateQuiz('isActive', e.target.checked)} className="rounded" />
-                <span className="text-sm font-medium">Active</span>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+              <label className="flex items-center gap-3 p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 transition-colors">
+                <input 
+                  type="checkbox" 
+                  checked={quizData.isActive} 
+                  onChange={(e) => updateQuiz('isActive', e.target.checked)} 
+                  className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" 
+                />
+                <span className="text-sm font-medium text-gray-700">Make this quiz active</span>
               </label>
             </div>
           </div>
@@ -114,58 +153,128 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
       </div>
 
       {/* Questions */}
-      <div className="space-y-4">
+      <div className="space-y-4 animate-slide-up">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold">Questions</h2>
-          <button type="button" onClick={addQuestion} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">+ Add Question</button>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+              <span className="material-symbols-outlined text-purple-600">quiz</span>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900">Questions</h2>
+          </div>
+          <button 
+            type="button" 
+            onClick={addQuestion} 
+            className="btn-primary flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined">add</span>
+            Add Question
+          </button>
         </div>
         
         {questions.map((q, idx) => (
-          <div key={q.id} className="bg-white p-6 rounded-lg shadow-sm border">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-semibold">Question {idx + 1}</h3>
+          <div key={q.id} className="card border-l-4 border-l-blue-500">
+            <div className="flex justify-between items-start mb-6">
+              <div className="flex items-center gap-3">
+                <span className="badge badge-info">Q{idx + 1}</span>
+                <h3 className="text-lg font-bold text-gray-900">Question {idx + 1}</h3>
+              </div>
               {questions.length > 1 && (
-                <button type="button" onClick={() => removeQuestion(q.id)} className="text-red-600 hover:text-red-800">Remove</button>
+                <button 
+                  type="button" 
+                  onClick={() => removeQuestion(q.id)} 
+                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Remove Question"
+                >
+                  <span className="material-symbols-outlined">delete</span>
+                </button>
               )}
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium mb-1">Question Text *</label>
-                <input type="text" value={q.questionText} onChange={(e) => updateQuestion(q.id, 'questionText', e.target.value)} className="w-full px-3 py-2 border rounded" required />
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Question Text <span className="text-red-500">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  value={q.questionText} 
+                  onChange={(e) => updateQuestion(q.id, 'questionText', e.target.value)} 
+                  className="input-field" 
+                  placeholder="Enter your question here..."
+                  required 
+                />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Type</label>
-                  <select value={q.type} onChange={(e) => changeQuestionType(q.id, e.target.value)} className="w-full px-3 py-2 border rounded">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Question Type</label>
+                  <select 
+                    value={q.type} 
+                    onChange={(e) => changeQuestionType(q.id, e.target.value)} 
+                    className="input-field"
+                  >
                     <option value="MULTIPLE_CHOICE">Multiple Choice</option>
                     <option value="TRUE_FALSE">True/False</option>
                     <option value="SHORT_ANSWER">Short Answer</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Points</label>
-                  <input type="number" value={q.points} onChange={(e) => updateQuestion(q.id, 'points', parseInt(e.target.value) || 1)} className="w-full px-3 py-2 border rounded" min="1" />
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Points</label>
+                  <input 
+                    type="number" 
+                    value={q.points} 
+                    onChange={(e) => updateQuestion(q.id, 'points', parseInt(e.target.value) || 1)} 
+                    className="input-field" 
+                    min="1" 
+                    max="10"
+                  />
                 </div>
               </div>
 
               {/* Options */}
               {q.type !== 'SHORT_ANSWER' && (
                 <div>
-                  <label className="block text-sm font-medium mb-2">Options</label>
-                  <div className="space-y-2">
-                    {q.options.map((opt) => (
-                      <div key={opt.id} className="flex items-center gap-2">
-                        <input type="radio" checked={opt.isCorrect} onChange={() => setCorrect(q.id, opt.id)} name={`correct-${q.id}`} />
-                        <input type="text" value={opt.optionText} onChange={(e) => updateOption(q.id, opt.id, 'optionText', e.target.value)} className="flex-1 px-3 py-2 border rounded" placeholder="Option text" />
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Answer Options <span className="text-xs text-gray-500">(Select the correct answer)</span>
+                  </label>
+                  <div className="space-y-3">
+                    {q.options.map((opt, optIdx) => (
+                      <div key={opt.id} className={`flex items-center gap-3 p-3 border-2 rounded-lg transition-all ${opt.isCorrect ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-blue-300'}`}>
+                        <input 
+                          type="radio" 
+                          checked={opt.isCorrect} 
+                          onChange={() => setCorrect(q.id, opt.id)} 
+                          name={`correct-${q.id}`}
+                          className="w-5 h-5 text-green-600 focus:ring-green-500"
+                        />
+                        <input 
+                          type="text" 
+                          value={opt.optionText} 
+                          onChange={(e) => updateOption(q.id, opt.id, 'optionText', e.target.value)} 
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                          placeholder={`Option ${String.fromCharCode(65 + optIdx)}`}
+                        />
                         {q.type !== 'TRUE_FALSE' && q.options.length > 2 && (
-                          <button type="button" onClick={() => removeOption(q.id, opt.id)} className="text-red-600 hover:text-red-800">×</button>
+                          <button 
+                            type="button" 
+                            onClick={() => removeOption(q.id, opt.id)} 
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Remove Option"
+                          >
+                            <span className="material-symbols-outlined text-xl">close</span>
+                          </button>
                         )}
                       </div>
                     ))}
                     {q.type === 'MULTIPLE_CHOICE' && (
-                      <button type="button" onClick={() => addOption(q.id)} className="text-blue-600 hover:text-blue-800 text-sm">+ Add Option</button>
+                      <button 
+                        type="button" 
+                        onClick={() => addOption(q.id)} 
+                        className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-blue-600 hover:border-blue-400 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <span className="material-symbols-outlined">add</span>
+                        Add Option
+                      </button>
                     )}
                   </div>
                 </div>
@@ -176,11 +285,32 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
       </div>
 
       {/* Submit */}
-      <div className="flex gap-4">
-        <button type="submit" disabled={loading} className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
-          {loading ? 'Saving...' : submitLabel}
+      <div className="flex gap-4 sticky bottom-0 bg-gray-50 py-4 border-t border-gray-200 -mx-6 px-6 -mb-6">
+        <button 
+          type="submit" 
+          disabled={loading} 
+          className="btn-primary flex items-center gap-2"
+        >
+          {loading ? (
+            <>
+              <span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></span>
+              Saving...
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined">save</span>
+              {submitLabel}
+            </>
+          )}
         </button>
-        <button type="button" onClick={() => window.history.back()} className="px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Cancel</button>
+        <button 
+          type="button" 
+          onClick={() => window.history.back()} 
+          className="btn-secondary"
+          disabled={loading}
+        >
+          Cancel
+        </button>
       </div>
     </form>
   );

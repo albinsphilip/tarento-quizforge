@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { adminAPI } from '../utils/api';
 import QuizForm from '../components/QuizForm';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const EditQuiz = () => {
   const navigate = useNavigate();
@@ -19,80 +21,79 @@ const EditQuiz = () => {
 
   const fetchQuiz = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8080/api/admin/quizzes/${quizId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch quiz');
-
-      const data = await response.json();
+      const data = await adminAPI.getQuiz(quizId);
+      
       setInitialData({
-        quizData: { title: data.title, description: data.description, duration: data.duration, isActive: data.isActive },
+        quizData: { 
+          title: data.title, 
+          description: data.description, 
+          duration: data.duration, 
+          isActive: data.isActive 
+        },
         questions: data.questions.map(q => ({
           id: q.id,
           questionText: q.questionText,
           type: q.type,
           points: q.points,
-          options: q.options.map(o => ({ id: o.id, optionText: o.optionText, isCorrect: o.isCorrect })),
+          options: q.options.map(o => ({ 
+            id: o.id, 
+            optionText: o.optionText, 
+            isCorrect: o.isCorrect 
+          })),
           isNew: false
         }))
       });
       setLoading(false);
     } catch (error) {
-      console.error('Error:', error);
-      alert('Failed to load quiz');
+      alert('Failed to load quiz: ' + error.message);
       navigate('/admin');
     }
   };
 
   const handleSubmit = async (data) => {
-    const token = localStorage.getItem('token');
-    const payload = {
-      title: data.title,
-      description: data.description,
-      duration: data.duration,
-      isActive: data.isActive,
-      questions: data.questions.map(q => ({
-        id: q.isNew ? null : q.id,
-        questionText: q.questionText,
-        type: q.type,
-        points: q.points,
-        options: q.options.map(o => ({
-          id: o.id > 1000000000000 ? null : o.id,
-          optionText: o.optionText,
-          isCorrect: o.isCorrect
+    try {
+      const payload = {
+        title: data.title,
+        description: data.description,
+        duration: data.duration,
+        isActive: data.isActive,
+        questions: data.questions.map(q => ({
+          id: q.isNew ? null : q.id,
+          questionText: q.questionText,
+          type: q.type,
+          points: q.points,
+          options: q.options.map(o => ({
+            id: o.id > 1000000000000 ? null : o.id,
+            optionText: o.optionText,
+            isCorrect: o.isCorrect
+          }))
         }))
-      }))
-    };
+      };
 
-    const response = await fetch(`http://localhost:8080/api/admin/quizzes/${quizId}`, {
-      method: 'PUT',
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (response.ok) {
-      alert('Quiz updated successfully!');
+      await adminAPI.updateQuiz(quizId, payload);
+      alert('✅ Quiz updated successfully!');
       navigate('/admin');
-    } else {
-      alert('Failed to update quiz');
+    } catch (error) {
+      alert('❌ Failed to update quiz: ' + error.message);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  if (loading) return <LoadingSpinner message="Loading quiz..." />;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <h1 className="text-2xl font-bold">Edit Quiz</h1>
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
+          <button 
+            onClick={() => navigate('/admin')} 
+            className="text-gray-600 hover:text-gray-900"
+          >
+            <span className="material-symbols-outlined">arrow_back</span>
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Edit Quiz</h1>
+            <p className="text-sm text-gray-600 mt-1">Update quiz details and questions</p>
+          </div>
         </div>
       </header>
       <main className="max-w-7xl mx-auto px-6 py-8">
