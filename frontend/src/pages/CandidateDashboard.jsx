@@ -39,6 +39,7 @@ function CandidateDashboard() {
       ]);
       
       setAvailableQuizzes(quizzes);
+      
       // Sort by submittedAt, but handle null values (put them at the end)
       setMyAttempts(attempts.sort((a, b) => {
         if (!a.submittedAt && !b.submittedAt) return 0;
