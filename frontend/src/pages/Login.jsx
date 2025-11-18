@@ -107,6 +107,7 @@ function Login() {
                 </button>
               </div>
             </div>
+        <div className="mt-20" />
 
             <button
               type="submit"
@@ -120,34 +121,12 @@ function Login() {
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-2">
-                  Sign In
+                  Log In
                   <span className="material-symbols-outlined text-xl">arrow_forward</span>
                 </span>
               )}
             </button>
           </form>
-
-          {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-xl">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="material-symbols-outlined text-blue-600 text-lg">info</span>
-              <p className="text-sm font-semibold text-blue-900">Demo Credentials</p>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between p-2 bg-white rounded-lg">
-                <span className="text-xs font-medium text-gray-600">Admin</span>
-                <span className="text-xs text-gray-800">admin@quizforge.com</span>
-              </div>
-              <div className="flex items-center justify-between p-2 bg-white rounded-lg">
-                <span className="text-xs font-medium text-gray-600">Candidate</span>
-                <span className="text-xs text-gray-800">candidate@example.com</span>
-              </div>
-              <div className="text-center pt-2">
-                <span className="text-xs text-gray-600">Password: </span>
-                <span className="text-xs font-semibold text-gray-800">password</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Footer */}
