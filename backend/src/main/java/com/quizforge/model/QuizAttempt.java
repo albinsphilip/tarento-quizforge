@@ -39,6 +39,12 @@ public class QuizAttempt {
     @Column(name = "total_points")
     private Integer totalPoints;
 
+    @Column(name = "time_taken_minutes")
+    private Long timeTakenMinutes;
+
+    @Column(name = "exceeded_time_limit")
+    private Boolean exceededTimeLimit = false;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AttemptStatus status = AttemptStatus.IN_PROGRESS;

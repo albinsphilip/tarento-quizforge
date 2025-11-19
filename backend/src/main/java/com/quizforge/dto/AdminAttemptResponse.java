@@ -12,5 +12,7 @@ public record AdminAttemptResponse(
     LocalDateTime submittedAt,
     Integer score,
     Integer totalPoints,
-    String status
+    String status,
+    Long timeTakenMinutes,
+    Boolean exceededTimeLimit
 ) {}

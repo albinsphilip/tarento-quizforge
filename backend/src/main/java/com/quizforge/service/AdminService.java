@@ -175,7 +175,9 @@ public class AdminService {
                 attempt.getSubmittedAt(),
                 attempt.getScore(),
                 attempt.getTotalPoints(),
-                attempt.getStatus().name()
+                attempt.getStatus().name(),
+                attempt.getTimeTakenMinutes(),
+                attempt.getExceededTimeLimit()
         );
     }
 

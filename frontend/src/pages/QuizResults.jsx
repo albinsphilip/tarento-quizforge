@@ -162,18 +162,27 @@ function QuizResults() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                 <p className="text-slate-600 text-sm mb-1 font-medium">Your Score</p>
                 <p className="text-2xl font-bold text-slate-900">
-                  {attempt.score}
+                  {attempt.score} / {attempt.totalPoints}
                 </p>
               </div>
               <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                <p className="text-slate-600 text-sm mb-1 font-medium">Total Points</p>
-                <p className="text-2xl font-bold text-slate-900">
-                  {attempt.totalPoints}
+                <p className="text-slate-600 text-sm mb-1 font-medium">Percentage</p>
+                <p className={`text-2xl font-bold ${getStatusColor()}`}>
+                  {percentage}%
                 </p>
+              </div>
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                <p className="text-slate-600 text-sm mb-1 font-medium">Time Taken</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {attempt.timeTakenMinutes ? `${attempt.timeTakenMinutes} min` : 'N/A'}
+                </p>
+                {attempt.exceededTimeLimit && (
+                  <p className="text-xs text-red-600 mt-1">⚠️ Exceeded time limit</p>
+                )}
               </div>
               <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                 <p className="text-slate-600 text-sm mb-1 font-medium">Status</p>
@@ -181,9 +190,7 @@ function QuizResults() {
                   {getStatusText()}
                 </p>
               </div>
-            </div>
-
-            {/* Performance Message */}
+            </div>            {/* Performance Message */}
             <div className={`p-4 rounded-lg ${
               percentage >= 70 
                 ? 'bg-emerald-50 border border-emerald-200' 

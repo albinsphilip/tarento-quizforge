@@ -41,37 +41,39 @@ const QuizTaking = () => {
     }
   }, []);
 
-  // Timer countdown - separated and fixed
+  // Timer countdown effect
   useEffect(() => {
-    if (!quiz || timeLeft <= 0 || submitting) {
+    // Only start timer if quiz is loaded and not submitting
+    if (!quiz || submitting) {
       return;
     }
 
-    timerRef.current = setInterval(() => {
+    // Start the countdown timer
+    const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           // Time's up - auto submit
-          autoSubmitQuiz();
+          clearInterval(timer);
+          if (!submitting) {
+            setSubmitting(true);
+            submitQuizToBackend(false);
+          }
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
+    // Store timer reference
+    timerRef.current = timer;
+
+    // Cleanup function
     return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
+      if (timer) {
+        clearInterval(timer);
       }
     };
-  }, [quiz, submitting]);
-
-  // Auto submit when time runs out
-  const autoSubmitQuiz = useCallback(() => {
-    if (submitting) return;
-    
-    setSubmitting(true);
-    submitQuizToBackend(false); // false = auto submit, no confirmation
-  }, [submitting]);
+  }, [quiz, submitting]); // Only re-run when quiz or submitting status changes
 
   // Start quiz attempt
   const startQuizAttempt = async () => {

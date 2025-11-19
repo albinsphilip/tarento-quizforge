@@ -76,6 +76,20 @@ public class CandidateService {
             throw new RuntimeException("Quiz already submitted");
         }
 
+        // Calculate time taken and validate time limit
+        Quiz quiz = attempt.getQuiz();
+        LocalDateTime now = LocalDateTime.now();
+        long elapsedMinutes = java.time.Duration.between(attempt.getStartedAt(), now).toMinutes();
+        
+        attempt.setTimeTakenMinutes(elapsedMinutes);
+        
+        if (elapsedMinutes > quiz.getDuration()) {
+            attempt.setExceededTimeLimit(true);
+            System.out.println("Warning: Quiz submitted after time limit. Elapsed: " + elapsedMinutes + " minutes, Allowed: " + quiz.getDuration() + " minutes");
+        } else {
+            attempt.setExceededTimeLimit(false);
+        }
+
         int totalScore = 0;
 
         for (AnswerRequest ansReq : request.answers()) {
@@ -187,7 +201,9 @@ public class CandidateService {
                 attempt.getSubmittedAt(),
                 attempt.getScore(),
                 attempt.getTotalPoints(),
-                attempt.getStatus().name()
+                attempt.getStatus().name(),
+                attempt.getTimeTakenMinutes(),
+                attempt.getExceededTimeLimit()
         );
     }
 }

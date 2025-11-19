@@ -350,6 +350,9 @@ function Analytics() {
                         Status
                       </th>
                       <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                        Time Taken
+                      </th>
+                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                         Date
                       </th>
                     </tr>
@@ -391,6 +394,18 @@ function Analytics() {
                               <span className={`badge ${isPassed ? 'badge-success' : 'badge-danger'}`}>
                                 {isPassed ? 'Passed' : 'Failed'}
                               </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-700">
+                              {attempt.timeTakenMinutes ? (
+                                <div>
+                                  <span>{attempt.timeTakenMinutes} min</span>
+                                  {attempt.exceededTimeLimit && (
+                                    <span className="ml-2 text-xs text-red-600">⚠️</span>
+                                  )}
+                                </div>
+                              ) : (
+                                'N/A'
+                              )}
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-500">
                               {new Date(attempt.submittedAt).toLocaleDateString()}
