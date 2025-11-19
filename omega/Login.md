@@ -3,40 +3,78 @@
 ## Overview
 The `Login` component is responsible for handling user authentication. It provides a form for users to enter their email and password, validates the credentials, and redirects users based on their roles (ADMIN or CANDIDATE).
 
-## Key Features
-- **Form Handling**: Includes fields for email and password with validation.
-- **Error Handling**: Displays error messages for invalid credentials.
-- **Role-Based Redirection**: Redirects users to the appropriate dashboard based on their role.
-- **Password Visibility Toggle**: Allows users to toggle the visibility of their password.
+## Line-by-Line Explanation
 
-## Code Breakdown
-### State Management
+### Imports
+```jsx
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authAPI } from '../utils/api';
+```
+- `useState`: React hook for managing component state.
+- `useNavigate`: React Router hook for navigation.
+- `authAPI`: Utility for making authentication-related API calls.
+
+### State Variables
+```jsx
+const [email, setEmail] = useState('');
+const [password, setPassword] = useState('');
+const [error, setError] = useState('');
+const [loading, setLoading] = useState(false);
+const [showPassword, setShowPassword] = useState(false);
+```
 - `email` and `password`: Store user input.
 - `error`: Stores error messages for display.
 - `loading`: Indicates whether the login process is ongoing.
 - `showPassword`: Toggles password visibility.
 
-### Functions
-- `handleSubmit`: Handles form submission, validates credentials, and redirects users.
-- `setShowPassword`: Toggles the visibility of the password field.
-
-### API Integration
-- Uses `authAPI.login` to authenticate users.
-- Stores the authentication token and user details in `localStorage`.
-
-### UI Components
-- **Form**: Includes fields for email and password.
-- **Error Alert**: Displays error messages.
-- **Submit Button**: Disabled during the login process.
-
-## Dependencies
-- `react-router-dom`: For navigation.
-- `authAPI`: For backend authentication.
-
-## Example Usage
+### `handleSubmit` Function
 ```jsx
-<Login />
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  setLoading(true);
+
+  try {
+    const data = await authAPI.login(email, password);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify({ 
+      email: data.email, 
+      name: data.name, 
+      role: data.role 
+    }));
+    navigate(data.role === 'ADMIN' ? '/admin' : '/candidate');
+  } catch (err) {
+    setError(err.message || 'Login failed. Please check your credentials.');
+  } finally {
+    setLoading(false);
+  }
+};
 ```
+- Prevents default form submission.
+- Calls `authAPI.login` to authenticate the user.
+- Stores the token and user details in `localStorage`.
+- Redirects the user based on their role.
+- Handles errors and updates the `error` state.
+
+### JSX Structure
+#### Form
+```jsx
+<form onSubmit={handleSubmit} className="space-y-4">
+  <div>
+    <label>Email Address</label>
+    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+  </div>
+  <div>
+    <label>Password</label>
+    <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} />
+  </div>
+  <button type="submit">Sign In</button>
+</form>
+```
+- Includes fields for email and password.
+- Toggles password visibility.
+- Submits the form via `handleSubmit`.
 
 ## File Location
 `src/pages/Login.jsx`

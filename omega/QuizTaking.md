@@ -3,47 +3,88 @@
 ## Overview
 The `QuizTaking` component allows candidates to take a quiz. It manages the quiz state, tracks answers, and submits the quiz upon completion.
 
-## Key Features
-- **Quiz Navigation**: Allows users to navigate between questions.
-- **Answer Tracking**: Tracks answers for each question.
-- **Timer**: Displays a countdown timer for the quiz.
-- **Auto-Submission**: Automatically submits the quiz when the timer runs out.
+## Line-by-Line Explanation
 
-## Code Breakdown
-### State Management
+### Imports
+```jsx
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { candidateAPI } from '../utils/api';
+```
+- `useState`, `useEffect`, `useCallback`, and `useRef`: React hooks for managing state, side effects, and references.
+- `useNavigate` and `useParams`: React Router hooks for navigation and accessing route parameters.
+- `candidateAPI`: Utility for making candidate-related API calls.
+
+### State Variables
+```jsx
+const [user, setUser] = useState(null);
+const [quiz, setQuiz] = useState(null);
+const [answers, setAnswers] = useState({});
+const [timeLeft, setTimeLeft] = useState(0);
+const [loading, setLoading] = useState(true);
+const [submitting, setSubmitting] = useState(false);
+```
 - `user`: Stores the logged-in user details.
 - `quiz`: Stores the quiz data.
 - `answers`: Tracks the user's answers.
 - `timeLeft`: Tracks the remaining time for the quiz.
 - `loading` and `submitting`: Indicate the loading and submission states.
 
-### Functions
-- `startQuizAttempt`: Initializes the quiz attempt and fetches quiz data.
-- `handleAnswerSelect` and `handleTextAnswer`: Track the user's answers.
-- `handleSaveAndNext`: Saves the current answer and navigates to the next question.
-- `handleSubmitQuiz`: Submits the quiz to the backend.
-- `submitQuizToBackend`: Handles the actual submission logic.
-- `formatTime`: Formats the remaining time for display.
-
-### API Integration
-- Uses `candidateAPI.getQuiz` to fetch quiz data.
-- Uses `candidateAPI.startQuiz` to start the quiz attempt.
-- Uses `candidateAPI.submitQuiz` to submit the quiz.
-
-### UI Components
-- **Header**: Displays the quiz title, candidate name, and timer.
-- **Question Card**: Displays the current question and answer options.
-- **Sidebar**: Provides navigation for all questions.
-- **Progress Summary**: Shows the number of answered, unanswered, and not visited questions.
-
-## Dependencies
-- `react-router-dom`: For navigation.
-- `candidateAPI`: For backend communication.
-
-## Example Usage
+### `useEffect` Hook
 ```jsx
-<QuizTaking />
+useEffect(() => {
+  const userData = localStorage.getItem('user');
+  if (!userData) {
+    navigate('/');
+    return;
+  }
+  const parsedUser = JSON.parse(userData);
+  if (parsedUser.role !== 'CANDIDATE') {
+    navigate('/');
+    return;
+  }
+  setUser(parsedUser);
+  startQuizAttempt();
+}, []);
 ```
+- Validates the user's role.
+- Calls `startQuizAttempt` to initialize the quiz attempt.
+
+### `startQuizAttempt` Function
+```jsx
+const startQuizAttempt = async () => {
+  try {
+    const quizData = await candidateAPI.getQuiz(quizId);
+    setQuiz(quizData);
+    const attemptData = await candidateAPI.startQuiz(quizId);
+    setTimeLeft(quizData.duration * 60);
+    setLoading(false);
+  } catch (error) {
+    navigate('/candidate');
+  }
+};
+```
+- Fetches quiz data and initializes the quiz attempt.
+- Updates the `quiz` and `timeLeft` states.
+
+### JSX Structure
+#### Header
+```jsx
+<header>
+  <h1>{quiz.title}</h1>
+  <p>Time Left: {formatTime(timeLeft)}</p>
+</header>
+```
+- Displays the quiz title and remaining time.
+
+#### Question Card
+```jsx
+<div>
+  <h2>{currentQuestion.questionText}</h2>
+  <button onClick={handleSaveAndNext}>Save & Next</button>
+</div>
+```
+- Displays the current question and a button to save and navigate to the next question.
 
 ## File Location
 `src/pages/QuizTaking.jsx`
