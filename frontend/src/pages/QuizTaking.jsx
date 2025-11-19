@@ -298,18 +298,18 @@ const QuizTaking = () => {
   const currentAnswer = answers[currentQuestion.id];
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gray-100">
       {/* Header */}
-      <header className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+      <header className="flex items-center justify-between p-4 bg-white border-b border-gray-200 shadow-sm">
         <div>
           <h1 className="text-base font-semibold text-gray-900">{quiz.title}</h1>
           <p className="text-sm text-gray-600">Candidate: {user?.name}</p>
         </div>
-        <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-md border border-gray-200">
+        <div className="flex items-center gap-3 bg-gradient-to-br from-indigo-50 to-blue-50 p-3 rounded-lg border border-indigo-200 shadow-sm">
           <span className="material-symbols-outlined text-xl text-indigo-600">timer</span>
           <div>
             <p className="text-xs text-gray-600 font-medium">Time Left</p>
-            <p className={`text-lg font-semibold ${timeLeft < 300 ? 'text-red-600' : 'text-gray-900'}`}>
+            <p className={`text-lg font-bold ${timeLeft < 300 ? 'text-red-600' : 'text-indigo-900'}`}>
               {formatTime(timeLeft)}
             </p>
           </div>
@@ -320,12 +320,12 @@ const QuizTaking = () => {
         {/* Main Content */}
         <main className="flex-1 flex flex-col p-5 overflow-y-auto">
           {/* Question Card */}
-          <div className="flex-1 bg-white rounded-md border border-gray-200 p-6">
+          <div className="flex-1 bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
             <div className="mb-5">
-              <span className="inline-block bg-gray-100 text-gray-700 text-sm font-medium px-3 py-1 rounded">
+              <span className="inline-block bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 text-sm font-medium px-3 py-1 rounded-md">
                 Question {currentQuestionIndex + 1} of {quiz.questions.length}
               </span>
-              <span className="ml-3 inline-block bg-indigo-50 text-indigo-700 text-sm font-medium px-3 py-1 rounded border border-indigo-200">
+              <span className="ml-3 inline-block bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-700 text-sm font-medium px-3 py-1 rounded-md border border-indigo-200">
                 {currentQuestion.points} {currentQuestion.points === 1 ? 'pt' : 'pts'}
               </span>
             </div>

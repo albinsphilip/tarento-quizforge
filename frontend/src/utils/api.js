@@ -32,7 +32,8 @@ export const adminAPI = {
   getQuiz: (id) => api.get(`/admin/quizzes/${id}`),
   createQuiz: (data) => api.post('/admin/quizzes', data),
   updateQuiz: (id, data) => api.put(`/admin/quizzes/${id}`, data),
-  deleteQuiz: (id) => api.delete(`/admin/quizzes/${id}`)
+  deleteQuiz: (id) => api.delete(`/admin/quizzes/${id}`),
+  getAllAttempts: () => api.get('/admin/quizzes/attempts/all')
 };
 
 // Candidate API

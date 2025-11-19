@@ -8,6 +8,7 @@ import CreateQuiz from './pages/CreateQuiz'
 import EditQuiz from './pages/EditQuiz'
 import CandidateProfile from './pages/CandidateProfile'
 import QuizHistory from './pages/QuizHistory'
+import Analytics from './pages/Analytics'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/candidate/*" element={<CandidateDashboard />} />
         <Route path="/candidate/history" element={<QuizHistory/>}/> //not yet created
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/quiz/create" element={<CreateQuiz />} />
         <Route path="/admin/quiz/edit/:quizId" element={<EditQuiz />} />
         <Route path="/admin/*" element={<AdminDashboard />} />

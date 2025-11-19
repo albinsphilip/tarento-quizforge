@@ -1,4 +1,5 @@
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/dto/QuizResponse.java
+/home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/dto/AdminAttemptResponse.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/QuizForgeApplication.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/repository/QuizAttemptRepository.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/config/OpenApiConfig.java

@@ -76,38 +76,38 @@ function CandidateDashboard() {
           {/* Stats Grid */}
           {stats.completed > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-              <div className="card bg-white border-gray-200">
+              <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-xs font-medium mb-1">Quizzes Completed</p>
-                    <p className="text-2xl font-semibold text-gray-900">{stats.completed}</p>
+                    <p className="text-gray-600 text-sm font-medium mb-1">Quizzes Completed</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats.completed}</p>
                   </div>
-                  <div className="w-10 h-10 bg-indigo-100 rounded-md flex items-center justify-center">
-                    <span className="material-symbols-outlined text-indigo-600 text-xl">task_alt</span>
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center shadow-sm">
+                    <span className="material-symbols-outlined text-white text-xl">check_circle</span>
                   </div>
                 </div>
               </div>
 
-              <div className="card bg-white border-gray-200">
+              <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-xs font-medium mb-1">Average Score</p>
-                    <p className="text-2xl font-semibold text-gray-900">{stats.avgScore}%</p>
+                    <p className="text-gray-600 text-sm font-medium mb-1">Average Score</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats.avgScore}%</p>
                   </div>
-                  <div className="w-10 h-10 bg-green-100 rounded-md flex items-center justify-center">
-                    <span className="material-symbols-outlined text-green-600 text-xl">trending_up</span>
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+                    <span className="material-symbols-outlined text-white text-xl">trending_up</span>
                   </div>
                 </div>
               </div>
 
-              <div className="card bg-white border-gray-200">
+              <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-xs font-medium mb-1">Quizzes Passed</p>
-                    <p className="text-2xl font-semibold text-gray-900">{stats.passed}</p>
+                    <p className="text-gray-600 text-sm font-medium mb-1">Quizzes Passed</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats.passed}</p>
                   </div>
-                  <div className="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
-                    <span className="material-symbols-outlined text-blue-600 text-xl">workspace_premium</span>
+                  <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm">
+                    <span className="material-symbols-outlined text-white text-xl">workspace_premium</span>
                   </div>
                 </div>
               </div>
@@ -119,7 +119,7 @@ function CandidateDashboard() {
             <h2 className="text-lg font-semibold text-gray-900 mb-5">Available Assessments</h2>
             
             {availableQuizzes.length === 0 ? (
-              <div className="card text-center py-12 border-gray-200">
+              <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
                 <span className="material-symbols-outlined text-5xl text-gray-300 mb-3">assignment</span>
                 <h3 className="text-base font-medium text-gray-700 mb-2">No Quizzes Available</h3>
                 <p className="text-gray-500 text-sm">Check back later for new assessments</p>
@@ -127,10 +127,10 @@ function CandidateDashboard() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {availableQuizzes.map((quiz) => (
-                  <div key={quiz.id} className="card border-gray-200">
+                  <div key={quiz.id} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg hover:border-indigo-300 transition-all group">
                     <div className="flex items-start justify-between mb-3">
-                      <div className="w-10 h-10 bg-indigo-600 rounded-md flex items-center justify-center">
-                        <span className="material-symbols-outlined text-white text-lg">assignment</span>
+                      <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                        <span className="material-symbols-outlined text-white text-lg">quiz</span>
                       </div>
                     </div>
                     

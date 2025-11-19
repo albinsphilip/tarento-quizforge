@@ -57,7 +57,7 @@ function QuizHistory() {
 
       <main className="flex-1 overflow-auto">
         <div className="p-8">
-          <h1 className="text-2xl font-bold text-slate-900 mb-6">Quiz History</h1>
+          <h1 className="text-2xl font-bold text-slate-900 mb-6">Quiz Attempt History</h1>
           {myAttempts.length === 0 ? (
             <div className="card text-center py-16 border-slate-200">
               <span className="material-symbols-outlined text-6xl text-slate-300 mb-4">history</span>

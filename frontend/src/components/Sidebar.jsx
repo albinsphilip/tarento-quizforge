@@ -9,25 +9,28 @@ const Sidebar = ({ role, currentPath, userName }) => {
   };
 
   const adminItems = [
-    { icon: 'dashboard', label: 'Dashboard', path: '/admin' }
+    { icon: 'dashboard', label: 'Dashboard', path: '/admin' },
+    { icon: 'analytics', label: 'Analytics', path: '/admin/analytics' }
   ];
 
   const candidateItems = [
     { icon: 'dashboard', label: 'Dashboard', path: '/candidate' },
     { icon: 'person', label: 'Profile', path: '/candidate/profile' },
-    {icon:'history', label:'Attempt history', path:'/candidate/history'} //not yet created
+    {icon:'history', label:'Attempts', path:'/candidate/history'} //not yet created
   ];
 
   const menuItems = role === 'ADMIN' ? adminItems : candidateItems;
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm">
       {/* Logo */}
-      <div className="p-5 border-b border-gray-200">
-        <h1 className="text-xl font-semibold text-gray-900">
-          QuizForge
-        </h1>
-        <p className="text-xs text-gray-500 mt-1">{role === 'ADMIN' ? 'Admin Panel' : 'Candidate Portal'}</p>
+      <div className="p-6 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-lg flex items-center justify-center shadow-sm">
+            <span className="material-symbols-outlined text-white text-xl">quiz</span>
+          </div>
+          <span className="text-lg font-bold text-gray-900">QuizForge</span>
+        </div>
       </div>
 
       {/* User Info */}

@@ -32,19 +32,19 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
       <div className="w-full max-w-md">
         {/* Card */}
-        <div className="bg-white shadow rounded-md p-8 border border-gray-200">
+        <div className="bg-white shadow-lg rounded-lg p-8 border border-gray-200">
           {/* Logo & Header */}
           <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-indigo-600 rounded-md flex items-center justify-center mx-auto mb-4">
-              <span className="material-symbols-outlined text-white text-2xl">assignment</span>
+            <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-lg flex items-center justify-center mx-auto mb-4 shadow-sm">
+              <span className="material-symbols-outlined text-white text-2xl">quiz</span>
             </div>
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            <h1 className="text-2xl font-extrabold tracking-wider text-gray-900 mb-2">
               QuizForge
             </h1>
-            <p className="text-gray-600 text-sm">Sign in to your account</p>
+            <p className="text-gray-600 text-sm pt-6">Quiz Management System</p>
           </div>
 
           {/* Error Alert */}

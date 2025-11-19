@@ -13,6 +13,7 @@ com/quizforge/model/QuizAttempt.class
 com/quizforge/service/CandidateService.class
 com/quizforge/repository/QuestionRepository.class
 com/quizforge/repository/QuizRepository.class
+com/quizforge/dto/AdminAttemptResponse.class
 com/quizforge/model/Question$QuestionType.class
 com/quizforge/dto/QuestionRequest.class
 com/quizforge/exception/ResourceNotFoundException.class

@@ -157,6 +157,28 @@ public class AdminService {
                 averageScore, highestScore, lowestScore);
     }
 
+    public List<AdminAttemptResponse> getAllAttempts() {
+        return attemptRepository.findAll().stream()
+                .filter(a -> a.getStatus() == QuizAttempt.AttemptStatus.EVALUATED)
+                .map(this::toAdminAttemptResponse)
+                .collect(Collectors.toList());
+    }
+
+    private AdminAttemptResponse toAdminAttemptResponse(QuizAttempt attempt) {
+        return new AdminAttemptResponse(
+                attempt.getId(),
+                attempt.getQuiz().getId(),
+                attempt.getQuiz().getTitle(),
+                attempt.getUser().getName(),
+                attempt.getUser().getEmail(),
+                attempt.getStartedAt(),
+                attempt.getSubmittedAt(),
+                attempt.getScore(),
+                attempt.getTotalPoints(),
+                attempt.getStatus().name()
+        );
+    }
+
     private QuizSummaryResponse toSummaryResponse(Quiz quiz) {
         return new QuizSummaryResponse(
                 quiz.getId(),

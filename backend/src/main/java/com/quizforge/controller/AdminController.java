@@ -69,4 +69,10 @@ public class AdminController {
     public ResponseEntity<QuizAnalyticsResponse> getQuizAnalytics(@PathVariable Long id) {
         return ResponseEntity.ok(adminService.getQuizAnalytics(id));
     }
+
+    @GetMapping("/attempts/all")
+    @Operation(summary = "Get all attempts", description = "Retrieve all quiz attempts across all quizzes")
+    public ResponseEntity<List<com.quizforge.dto.AdminAttemptResponse>> getAllAttempts() {
+        return ResponseEntity.ok(adminService.getAllAttempts());
+    }
 }

@@ -83,104 +83,104 @@ function AdminDashboard() {
             </div>
           )}
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
-            <div className="card bg-white border-gray-200">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 font-medium">Total Quizzes</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{quizzes.length}</p>
+              </div>
+              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm">
+                <span className="material-symbols-outlined text-white text-xl">quiz</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-xs font-medium mb-1">Total Quizzes</p>
-                  <p className="text-2xl font-semibold text-gray-900">{quizzes.length}</p>
+                  <p className="text-sm text-gray-600 font-medium">Active Quizzes</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{activeCount}</p>
                 </div>
-                <div className="w-10 h-10 bg-indigo-100 rounded-md flex items-center justify-center">
-                  <span className="material-symbols-outlined text-indigo-600 text-xl">assignment</span>
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <span className="material-symbols-outlined text-white text-xl">check_circle</span>
                 </div>
               </div>
             </div>
 
-            <div className="card bg-white border-gray-200">
+            <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-xs font-medium mb-1">Active Quizzes</p>
-                  <p className="text-2xl font-semibold text-gray-900">{activeCount}</p>
+                  <p className="text-sm text-gray-600 font-medium">Inactive Quizzes</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{inactiveCount}</p>
                 </div>
-                <div className="w-10 h-10 bg-green-100 rounded-md flex items-center justify-center">
-                  <span className="material-symbols-outlined text-green-600 text-xl">check_circle</span>
+                <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <span className="material-symbols-outlined text-white text-xl">pending</span>
                 </div>
               </div>
             </div>
 
-            <div className="card bg-white border-gray-200">
+            <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-xs font-medium mb-1">Inactive Quizzes</p>
-                  <p className="text-2xl font-semibold text-gray-900">{inactiveCount}</p>
+                  <p className="text-sm text-gray-600 font-medium">Total Questions</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{totalQuestions}</p>
                 </div>
-                <div className="w-10 h-10 bg-yellow-100 rounded-md flex items-center justify-center">
-                  <span className="material-symbols-outlined text-yellow-600 text-xl">pending</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="card bg-white border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-xs font-medium mb-1">Total Questions</p>
-                  <p className="text-2xl font-semibold text-gray-900">{totalQuestions}</p>
-                </div>
-                <div className="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
-                  <span className="material-symbols-outlined text-blue-600 text-xl">list</span>
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <span className="material-symbols-outlined text-white text-xl">list</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Quizzes Section */}
-          <div className="card border-gray-200">
-            <div className="flex justify-between items-center mb-5">
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
               <h2 className="text-lg font-semibold text-gray-900">Quiz Management</h2>
+              <button 
+                onClick={() => navigate('/admin/quiz/create')} 
+                className="btn-primary inline-flex items-center gap-1.5"
+              >
+                <span className="material-symbols-outlined text-lg">add</span>
+                Create Quiz
+              </button>
             </div>
 
             {quizzes.length === 0 ? (
-              <div className="text-center py-12">
+              <div className="text-center py-12 px-6">
                 <span className="material-symbols-outlined text-5xl text-gray-300 mb-3">assignment</span>
                 <h3 className="text-base font-medium text-gray-700 mb-2">No Quizzes Yet</h3>
-                <p className="text-gray-500 text-sm mb-5">Create your first quiz to get started!</p>
-                <button 
-                  onClick={() => navigate('/admin/quiz/create')} 
-                  className="btn-primary inline-flex items-center gap-2"
-                >
-                  <span className="material-symbols-outlined">add</span>
-                  Create Quiz
-                </button>
+                <p className="text-gray-500 text-sm">Create your first quiz to get started!</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-slate-200 bg-slate-50">
-                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                    <tr className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                         Quiz Details
                       </th>
-                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                         Duration
                       </th>
-                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                         Questions
                       </th>
-                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-6 py-3.5 text-right text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      <th className="px-6 py-3.5 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200">
+                  <tbody className="divide-y divide-gray-200">
                     {quizzes.map((quiz) => (
-                      <tr key={quiz.id} className="hover:bg-slate-50 transition-colors">
+                      <tr key={quiz.id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4">
-                          <div className="font-semibold text-slate-900 text-sm">{quiz.title}</div>
-                          <div className="text-xs text-slate-500 mt-1">
+                          <div className="font-semibold text-gray-900 text-sm">{quiz.title}</div>
+                          <div className="text-xs text-gray-500 mt-1">
                             {quiz.description ? (
                               quiz.description.length > 60 
                                 ? quiz.description.substring(0, 60) + '...' 
@@ -188,15 +188,15 @@ function AdminDashboard() {
                             ) : 'No description'}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-slate-700">
+                        <td className="px-6 py-4 text-sm text-gray-700">
                           <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg text-slate-400">schedule</span>
+                            <span className="material-symbols-outlined text-lg text-gray-400">schedule</span>
                             {quiz.duration} min
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-slate-700">
+                        <td className="px-6 py-4 text-sm text-gray-700">
                           <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg text-slate-400">list</span>
+                            <span className="material-symbols-outlined text-lg text-gray-400">list</span>
                             {quiz.questions?.length || 0}
                           </div>
                         </td>
@@ -209,14 +209,14 @@ function AdminDashboard() {
                           <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => navigate(`/admin/quiz/edit/${quiz.id}`)}
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                               title="Edit"
                             >
                               <span className="material-symbols-outlined">edit</span>
                             </button>
                             <button
                               onClick={() => handleDelete(quiz.id, quiz.title)}
-                              className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                               title="Delete"
                             >
                               <span className="material-symbols-outlined">delete</span>
