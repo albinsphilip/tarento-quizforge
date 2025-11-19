@@ -64,50 +64,50 @@ function CandidateDashboard() {
       <main className="flex-1 overflow-auto">
         {/* Header */}
         <div className="bg-white border-b border-gray-200">
-          <div className="px-8 py-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-1">
-              Welcome back, {user?.name || 'Candidate'}!
+          <div className="px-8 py-5">
+            <h1 className="text-xl font-semibold text-gray-900">
+              Welcome back, {user?.name || 'Candidate'}
             </h1>
-            <p className="text-gray-600">Ready to take on a new challenge? Let's get started!</p>
+            <p className="text-gray-600 text-sm mt-1">Ready to take on a new challenge?</p>
           </div>
         </div>
 
-        <div className="p-8">
+        <div className="p-6">
           {/* Stats Grid */}
           {stats.completed > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-fade-in">
-              <div className="card bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+              <div className="card bg-white border-gray-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-100 text-sm font-medium mb-1">Quizzes Completed</p>
-                    <p className="text-4xl font-bold">{stats.completed}</p>
+                    <p className="text-gray-600 text-xs font-medium mb-1">Quizzes Completed</p>
+                    <p className="text-2xl font-semibold text-gray-900">{stats.completed}</p>
                   </div>
-                  <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                    <span className="material-symbols-outlined text-4xl">task_alt</span>
+                  <div className="w-10 h-10 bg-indigo-100 rounded-md flex items-center justify-center">
+                    <span className="material-symbols-outlined text-indigo-600 text-xl">task_alt</span>
                   </div>
                 </div>
               </div>
 
-              <div className="card bg-gradient-to-br from-green-500 to-green-600 text-white">
+              <div className="card bg-white border-gray-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-green-100 text-sm font-medium mb-1">Average Score</p>
-                    <p className="text-4xl font-bold">{stats.avgScore}%</p>
+                    <p className="text-gray-600 text-xs font-medium mb-1">Average Score</p>
+                    <p className="text-2xl font-semibold text-gray-900">{stats.avgScore}%</p>
                   </div>
-                  <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                    <span className="material-symbols-outlined text-4xl">trending_up</span>
+                  <div className="w-10 h-10 bg-green-100 rounded-md flex items-center justify-center">
+                    <span className="material-symbols-outlined text-green-600 text-xl">trending_up</span>
                   </div>
                 </div>
               </div>
 
-              <div className="card bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+              <div className="card bg-white border-gray-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-purple-100 text-sm font-medium mb-1">Quizzes Passed</p>
-                    <p className="text-4xl font-bold">{stats.passed}</p>
+                    <p className="text-gray-600 text-xs font-medium mb-1">Quizzes Passed</p>
+                    <p className="text-2xl font-semibold text-gray-900">{stats.passed}</p>
                   </div>
-                  <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                    <span className="material-symbols-outlined text-4xl">workspace_premium</span>
+                  <div className="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
+                    <span className="material-symbols-outlined text-blue-600 text-xl">workspace_premium</span>
                   </div>
                 </div>
               </div>
@@ -115,38 +115,38 @@ function CandidateDashboard() {
           )}
 
           {/* Available Quizzes */}
-          <section className="mb-8 animate-slide-up">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Available Assessments</h2>
+          <section>
+            <h2 className="text-lg font-semibold text-gray-900 mb-5">Available Assessments</h2>
             
             {availableQuizzes.length === 0 ? (
-              <div className="card text-center py-16">
-                <span className="material-symbols-outlined text-6xl text-gray-300 mb-4">assignment</span>
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">No Quizzes Available</h3>
-                <p className="text-gray-500">Check back later for new assessments!</p>
+              <div className="card text-center py-12 border-gray-200">
+                <span className="material-symbols-outlined text-5xl text-gray-300 mb-3">assignment</span>
+                <h3 className="text-base font-medium text-gray-700 mb-2">No Quizzes Available</h3>
+                <p className="text-gray-500 text-sm">Check back later for new assessments</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {availableQuizzes.map((quiz) => (
-                  <div key={quiz.id} className="card group hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                  <div key={quiz.id} className="card border-gray-200">
                     <div className="flex items-start justify-between mb-3">
-                      <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <span className="material-symbols-outlined text-white text-2xl">assignment</span>
+                      <div className="w-10 h-10 bg-indigo-600 rounded-md flex items-center justify-center">
+                        <span className="material-symbols-outlined text-white text-lg">assignment</span>
                       </div>
                     </div>
                     
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors min-h-[3.5rem]">
+                    <h3 className="text-base font-medium text-gray-900 mb-2 min-h-[2.5rem]">
                       {quiz.title}
                     </h3>
                     <p className="text-gray-600 text-sm mb-4 h-10 overflow-hidden">
                       {quiz.description || 'No description available'}
                     </p>
                     
-                    <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-4 mb-4 text-sm text-slate-500">
+                      <div className="flex items-center gap-1.5">
                       <span className="material-symbols-outlined text-lg">list</span>
-                      <span>{quiz.totalQuestions||0} question</span>
+                      <span>{quiz.totalQuestions||0} questions</span>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
                       <span className="material-symbols-outlined text-lg">timer</span>
                       <span>{quiz.duration || 0} min</span>
                       </div>
@@ -156,7 +156,7 @@ function CandidateDashboard() {
                       onClick={() => navigate(`/candidate/quiz/${quiz.id}`)}
                       className="w-full btn-primary flex items-center justify-center gap-2"
                     >
-                      <span className="material-symbols-outlined">play_arrow</span>
+                      <span className="material-symbols-outlined text-lg">play_arrow</span>
                       Start Assessment
                     </button>
                   </div>

@@ -85,20 +85,20 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {/* Quiz Details */}
-      <div className="card animate-fade-in">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-            <span className="material-symbols-outlined text-blue-600">info</span>
+      <div className="card border-gray-200">
+        <div className="flex items-center gap-2 mb-5">
+          <div className="w-8 h-8 bg-indigo-100 rounded-md flex items-center justify-center">
+            <span className="material-symbols-outlined text-indigo-600 text-lg">info</span>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">Quiz Details</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Quiz Details</h2>
         </div>
         
-        <div className="space-y-5">
+        <div className="space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Quiz Title <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Quiz Title <span className="text-red-600">*</span>
             </label>
             <input 
               type="text" 
@@ -111,7 +111,7 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
           </div>
           
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Description</label>
             <textarea 
               value={quizData.description} 
               onChange={(e) => updateQuiz('description', e.target.value)} 
@@ -123,8 +123,8 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Duration (minutes) <span className="text-red-500">*</span>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Duration (minutes) <span className="text-rose-500">*</span>
               </label>
               <input 
                 type="number" 
@@ -137,15 +137,15 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Status</label>
-              <label className="flex items-center gap-3 p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 transition-colors">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Status</label>
+              <label className="flex items-center gap-3 p-3 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-blue-300 transition-colors">
                 <input 
                   type="checkbox" 
                   checked={quizData.isActive} 
                   onChange={(e) => updateQuiz('isActive', e.target.checked)} 
                   className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" 
                 />
-                <span className="text-sm font-medium text-gray-700">Make this quiz active</span>
+                <span className="text-sm font-medium text-slate-700">Make this quiz active</span>
               </label>
             </div>
           </div>
@@ -153,13 +153,13 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
       </div>
 
       {/* Questions */}
-      <div className="space-y-4 animate-slide-up">
+      <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <span className="material-symbols-outlined text-purple-600">quiz</span>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-blue-100 rounded-md flex items-center justify-center">
+              <span className="material-symbols-outlined text-blue-600 text-lg">quiz</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Questions</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Questions</h2>
           </div>
           <button 
             type="button" 
@@ -172,28 +172,28 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
         </div>
         
         {questions.map((q, idx) => (
-          <div key={q.id} className="card border-l-4 border-l-blue-500">
-            <div className="flex justify-between items-start mb-6">
-              <div className="flex items-center gap-3">
-                <span className="badge badge-info">Q{idx + 1}</span>
-                <h3 className="text-lg font-bold text-gray-900">Question {idx + 1}</h3>
+          <div key={q.id} className="card border-l-4 border-l-indigo-500 border-gray-200">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-2">
+                <span className="badge badge-info text-xs">Q{idx + 1}</span>
+                <h3 className="text-base font-medium text-gray-900">Question {idx + 1}</h3>
               </div>
               {questions.length > 1 && (
                 <button 
                   type="button" 
                   onClick={() => removeQuestion(q.id)} 
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
                   title="Remove Question"
                 >
-                  <span className="material-symbols-outlined">delete</span>
+                  <span className="material-symbols-outlined text-lg">delete</span>
                 </button>
               )}
             </div>
 
-            <div className="space-y-5">
+            <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Question Text <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Question Text <span className="text-red-600">*</span>
                 </label>
                 <input 
                   type="text" 
@@ -207,7 +207,7 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Question Type</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Question Type</label>
                   <select 
                     value={q.type} 
                     onChange={(e) => changeQuestionType(q.id, e.target.value)} 
@@ -219,7 +219,7 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Points</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Points</label>
                   <input 
                     type="number" 
                     value={q.points} 
@@ -234,31 +234,31 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
               {/* Options */}
               {q.type !== 'SHORT_ANSWER' && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Answer Options <span className="text-xs text-gray-500">(Select the correct answer)</span>
                   </label>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {q.options.map((opt, optIdx) => (
-                      <div key={opt.id} className={`flex items-center gap-3 p-3 border-2 rounded-lg transition-all ${opt.isCorrect ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-blue-300'}`}>
+                      <div key={opt.id} className={`flex items-center gap-2 p-2.5 border rounded-md ${opt.isCorrect ? 'border-green-400 bg-green-50' : 'border-gray-300'}`}>
                         <input 
                           type="radio" 
                           checked={opt.isCorrect} 
                           onChange={() => setCorrect(q.id, opt.id)} 
                           name={`correct-${q.id}`}
-                          className="w-5 h-5 text-green-600 focus:ring-green-500"
+                          className="w-4 h-4 text-green-600 focus:ring-green-500"
                         />
                         <input 
                           type="text" 
                           value={opt.optionText} 
                           onChange={(e) => updateOption(q.id, opt.id, 'optionText', e.target.value)} 
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                          className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                           placeholder={`Option ${String.fromCharCode(65 + optIdx)}`}
                         />
                         {q.type !== 'TRUE_FALSE' && q.options.length > 2 && (
                           <button 
                             type="button" 
                             onClick={() => removeOption(q.id, opt.id)} 
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                             title="Remove Option"
                           >
                             <span className="material-symbols-outlined text-xl">close</span>
@@ -270,7 +270,7 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
                       <button 
                         type="button" 
                         onClick={() => addOption(q.id)} 
-                        className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-blue-600 hover:border-blue-400 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+                        className="w-full py-2 border-2 border-dashed border-slate-300 rounded-lg text-blue-600 hover:border-blue-400 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
                       >
                         <span className="material-symbols-outlined">add</span>
                         Add Option
@@ -285,23 +285,13 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
       </div>
 
       {/* Submit */}
-      <div className="flex gap-4 sticky bottom-0 bg-gray-50 py-4 border-t border-gray-200 -mx-6 px-6 -mb-6">
+      <div className="flex gap-3 sticky bottom-0 bg-gray-50 py-4 border-t border-gray-200 -mx-6 px-6 -mb-6">
         <button 
           type="submit" 
           disabled={loading} 
-          className="btn-primary flex items-center gap-2"
+          className="btn-primary"
         >
-          {loading ? (
-            <>
-              <span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></span>
-              Saving...
-            </>
-          ) : (
-            <>
-              <span className="material-symbols-outlined">save</span>
-              {submitLabel}
-            </>
-          )}
+          {loading ? 'Saving...' : submitLabel}
         </button>
         <button 
           type="button" 

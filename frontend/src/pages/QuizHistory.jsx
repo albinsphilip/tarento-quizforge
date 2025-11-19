@@ -52,29 +52,29 @@ function QuizHistory() {
   if (loading) return <LoadingSpinner message="Loading quiz history..." />;
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-slate-50">
       <Sidebar role="CANDIDATE" currentPath="/candidate/history" userName={user?.name} />
 
       <main className="flex-1 overflow-auto">
         <div className="p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">Quiz History</h1>
+          <h1 className="text-2xl font-bold text-slate-900 mb-6">Quiz History</h1>
           {myAttempts.length === 0 ? (
-            <div className="card text-center py-16">
-              <span className="material-symbols-outlined text-6xl text-gray-300 mb-4">history</span>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">No Quiz History</h3>
-              <p className="text-gray-500">You haven't completed any quizzes yet.</p>
+            <div className="card text-center py-16 border-slate-200">
+              <span className="material-symbols-outlined text-6xl text-slate-300 mb-4">history</span>
+              <h3 className="text-lg font-semibold text-slate-700 mb-2">No Quiz History</h3>
+              <p className="text-slate-500 text-sm">You haven't completed any quizzes yet.</p>
             </div>
           ) : (
-            <div className="card p-0 overflow-hidden">
+            <div className="card p-0 overflow-hidden border-slate-200">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-gray-50 border-b border-gray-200">
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Quiz</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Score</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Percentage</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                    <tr className="bg-slate-50 border-b border-slate-200">
+                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Quiz</th>
+                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Date</th>
+                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Score</th>
+                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Percentage</th>
+                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">

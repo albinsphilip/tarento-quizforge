@@ -46,10 +46,10 @@ function QuizResults() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading results...</p>
+          <p className="mt-4 text-slate-600">Loading results...</p>
         </div>
       </div>
     );
@@ -57,12 +57,12 @@ function QuizResults() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">Error: {error}</p>
+          <p className="text-rose-600 mb-4">Error: {error}</p>
           <button
             onClick={() => navigate('/candidate')}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
             Back to Dashboard
           </button>
@@ -73,12 +73,12 @@ function QuizResults() {
 
   if (!attempt) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">No results found</p>
+          <p className="text-slate-600 mb-4">No results found</p>
           <button
             onClick={() => navigate('/candidate')}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
             Back to Dashboard
           </button>
@@ -92,21 +92,21 @@ function QuizResults() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <button
                 onClick={() => navigate('/candidate')}
                 className="text-gray-600 hover:text-gray-900"
               >
                 <span className="material-symbols-outlined">arrow_back</span>
               </button>
-              <h1 className="text-2xl font-bold text-gray-900">Quiz Results</h1>
+              <h1 className="text-lg font-semibold text-gray-900">Quiz Results</h1>
             </div>
             <button
               onClick={() => navigate('/candidate')}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 font-medium text-sm"
             >
               Back to Dashboard
             </button>
@@ -115,14 +115,14 @@ function QuizResults() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <main className="max-w-4xl mx-auto px-4 py-6 sm:px-6">
         {/* Score Card */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
+        <div className="bg-white rounded-md border border-gray-200 p-6 mb-6">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
               {attempt.quiz?.title || 'Quiz'}
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 text-sm mb-5">
               Submitted on {new Date(attempt.submittedAt).toLocaleString()}
             </p>
 
@@ -163,20 +163,20 @@ function QuizResults() {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-gray-600 text-sm mb-1">Your Score</p>
-                <p className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                <p className="text-slate-600 text-sm mb-1 font-medium">Your Score</p>
+                <p className="text-2xl font-bold text-slate-900">
                   {attempt.score}
                 </p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-gray-600 text-sm mb-1">Total Points</p>
-                <p className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                <p className="text-slate-600 text-sm mb-1 font-medium">Total Points</p>
+                <p className="text-2xl font-bold text-slate-900">
                   {attempt.totalPoints}
                 </p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-gray-600 text-sm mb-1">Status</p>
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                <p className="text-slate-600 text-sm mb-1 font-medium">Status</p>
                 <p className={`text-2xl font-bold ${getStatusColor()}`}>
                   {getStatusText()}
                 </p>
@@ -186,17 +186,17 @@ function QuizResults() {
             {/* Performance Message */}
             <div className={`p-4 rounded-lg ${
               percentage >= 70 
-                ? 'bg-green-50 border border-green-200' 
+                ? 'bg-emerald-50 border border-emerald-200' 
                 : percentage >= 50 
-                ? 'bg-yellow-50 border border-yellow-200' 
-                : 'bg-red-50 border border-red-200'
+                ? 'bg-amber-50 border border-amber-200' 
+                : 'bg-rose-50 border border-rose-200'
             }`}>
-              <p className={`font-semibold ${
+              <p className={`font-semibold text-sm ${
                 percentage >= 70 
-                  ? 'text-green-800' 
+                  ? 'text-emerald-800' 
                   : percentage >= 50 
-                  ? 'text-yellow-800' 
-                  : 'text-red-800'
+                  ? 'text-amber-800' 
+                  : 'text-rose-800'
               }`}>
                 {percentage >= 70 
                   ? '🎉 Excellent! You passed with flying colors!' 
@@ -210,11 +210,11 @@ function QuizResults() {
 
         {/* Question Review (if available) */}
         {attempt.quiz?.questions && attempt.quiz.questions.length > 0 && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+            <h3 className="text-lg font-bold text-slate-900 mb-4">
               Question Review
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-slate-600 text-sm mb-4">
               Total Questions: {attempt.quiz.questions.length}
             </p>
             
@@ -232,21 +232,21 @@ function QuizResults() {
                 return (
                   <div
                     key={question.id}
-                    className={`border rounded-lg p-4 ${
+                    className={`border-2 rounded-lg p-4 ${
                       isCorrect === true
-                        ? 'border-green-200 bg-green-50'
+                        ? 'border-emerald-200 bg-emerald-50'
                         : isCorrect === false
-                        ? 'border-red-200 bg-red-50'
-                        : 'border-gray-200 bg-gray-50'
+                        ? 'border-rose-200 bg-rose-50'
+                        : 'border-slate-200 bg-slate-50'
                     }`}
                   >
                     <div className="flex items-start">
-                      <span className={`mr-3 mt-1 material-symbols-outlined ${
+                      <span className={`mr-3 mt-0.5 material-symbols-outlined text-xl ${
                         isCorrect === true
-                          ? 'text-green-600'
+                          ? 'text-emerald-600'
                           : isCorrect === false
-                          ? 'text-red-600'
-                          : 'text-gray-400'
+                          ? 'text-rose-600'
+                          : 'text-slate-400'
                       }`}>
                         {isCorrect === true
                           ? 'check_circle'
@@ -255,7 +255,7 @@ function QuizResults() {
                           : 'help'}
                       </span>
                       <div className="flex-1">
-                        <p className="font-semibold text-gray-900 mb-2">
+                        <p className="font-semibold text-slate-900 mb-2 text-sm">
                           {index + 1}. {question.questionText}
                         </p>
                         
@@ -334,7 +334,7 @@ function QuizResults() {
         <div className="mt-8 flex justify-center space-x-4">
           <button
             onClick={() => navigate('/candidate')}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
           >
             Back to Dashboard
           </button>
