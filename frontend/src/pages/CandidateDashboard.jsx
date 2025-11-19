@@ -9,7 +9,7 @@ function CandidateDashboard() {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [availableQuizzes, setAvailableQuizzes] = useState([]);
-  const [myAttempts, setMyAttempts] = useState([]);
+  const [stats, setStats] = useState({ completed: 0, avgScore: 0, passed: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,13 +40,14 @@ function CandidateDashboard() {
       
       setAvailableQuizzes(quizzes);
       
-      // Sort by submittedAt, but handle null values (put them at the end)
-      setMyAttempts(attempts.sort((a, b) => {
-        if (!a.submittedAt && !b.submittedAt) return 0;
-        if (!a.submittedAt) return 1;
-        if (!b.submittedAt) return -1;
-        return new Date(b.submittedAt) - new Date(a.submittedAt);
-      }));
+      // Calculate stats from attempts
+      const completed = attempts.length;
+      const avgScore = attempts.length > 0 
+        ? Math.round(attempts.reduce((sum, a) => sum + (a.totalPoints > 0 ? (a.score / a.totalPoints) * 100 : 0), 0) / attempts.length)
+        : 0;
+      const passed = attempts.filter(a => a.totalPoints > 0 && (a.score / a.totalPoints) * 100 >= 70).length;
+      
+      setStats({ completed, avgScore, passed });
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -55,12 +56,6 @@ function CandidateDashboard() {
   };
 
   if (loading) return <LoadingSpinner message="Loading dashboard..." />;
-
-  const completedQuizzes = myAttempts.length;
-  const avgScore = myAttempts.length > 0 
-    ? Math.round(myAttempts.reduce((sum, a) => sum + (a.totalPoints > 0 ? (a.score / a.totalPoints) * 100 : 0), 0) / myAttempts.length)
-    : 0;
-  const passedQuizzes = myAttempts.filter(a => a.totalPoints > 0 && (a.score / a.totalPoints) * 100 >= 70).length;
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -79,13 +74,13 @@ function CandidateDashboard() {
 
         <div className="p-8">
           {/* Stats Grid */}
-          {myAttempts.length > 0 && (
+          {stats.completed > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-fade-in">
               <div className="card bg-gradient-to-br from-blue-500 to-blue-600 text-white">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-blue-100 text-sm font-medium mb-1">Quizzes Completed</p>
-                    <p className="text-4xl font-bold">{completedQuizzes}</p>
+                    <p className="text-4xl font-bold">{stats.completed}</p>
                   </div>
                   <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
                     <span className="material-symbols-outlined text-4xl">task_alt</span>
@@ -97,7 +92,7 @@ function CandidateDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-green-100 text-sm font-medium mb-1">Average Score</p>
-                    <p className="text-4xl font-bold">{avgScore}%</p>
+                    <p className="text-4xl font-bold">{stats.avgScore}%</p>
                   </div>
                   <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
                     <span className="material-symbols-outlined text-4xl">trending_up</span>
@@ -109,7 +104,7 @@ function CandidateDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-purple-100 text-sm font-medium mb-1">Quizzes Passed</p>
-                    <p className="text-4xl font-bold">{passedQuizzes}</p>
+                    <p className="text-4xl font-bold">{stats.passed}</p>
                   </div>
                   <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
                     <span className="material-symbols-outlined text-4xl">workspace_premium</span>
@@ -170,98 +165,7 @@ function CandidateDashboard() {
             )}
           </section>
 
-          {/* Quiz History */}
-          {myAttempts.length > 0 && (
-            <section className="animate-slide-up">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">My Quiz History</h2>
-              <div className="card p-0 overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-gray-50 border-b border-gray-200">
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Quiz</th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Score</th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Percentage</th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                        <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {myAttempts.map((attempt) => {
-                        const percentage = attempt.totalPoints > 0 
-                          ? Math.round((attempt.score / attempt.totalPoints) * 100) 
-                          : 0;
-                        
-                        const isSubmitted = attempt.submittedAt && attempt.submittedAt !== null;
-                        const dateToShow = isSubmitted ? attempt.submittedAt : attempt.startedAt;
-                        
-                        return (
-                          <tr key={attempt.id} className="hover:bg-gray-50 transition-colors">
-                            <td className="px-6 py-4">
-                              <div className="font-semibold text-gray-900">{attempt.quizTitle || 'Quiz'}</div>
-                            </td>
-                            <td className="px-6 py-4 text-sm text-gray-600">
-                              {isSubmitted ? (
-                                new Date(dateToShow).toLocaleDateString('en-US', { 
-                                  year: 'numeric', 
-                                  month: 'short', 
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })
-                              ) : (
-                                <span className="text-amber-600">Not submitted</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm font-semibold text-gray-900">
-                              {isSubmitted ? `${attempt.score}/${attempt.totalPoints}` : '-'}
-                            </td>
-                            <td className="px-6 py-4">
-                              {isSubmitted ? (
-                                <div className="flex items-center gap-2">
-                                  <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                    <div 
-                                      className={`h-full ${percentage >= 50 ? 'bg-green-500' : 'bg-red-500'}`}
-                                      style={{ width: `${percentage}%` }}
-                                    ></div>
-                                  </div>
-                                  <span className="text-sm font-semibold">{percentage}%</span>
-                                </div>
-                              ) : (
-                                <span className="text-gray-400">-</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4">
-                              {isSubmitted ? (
-                                <span className={`badge ${percentage >= 50 ? 'badge-success' : 'badge-danger'}`}>
-                                  {percentage >= 50 ? 'Good' : 'Review'}
-                                </span>
-                              ) : (
-                                <span className="badge badge-warning">Pending</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-right">
-                              {isSubmitted ? (
-                                <button 
-                                  onClick={() => navigate(`/candidate/results/${attempt.id}`)} 
-                                  className="text-blue-600 hover:text-blue-800 font-semibold text-sm"
-                                >
-                                  View Details →
-                                </button>
-                              ) : (
-                                <span className="text-gray-400 text-sm">No results</span>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </section>
-          )}
+
         </div>
       </main>
     </div>
