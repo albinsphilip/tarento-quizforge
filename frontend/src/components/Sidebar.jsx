@@ -16,7 +16,7 @@ const Sidebar = ({ role, currentPath, userName }) => {
   const candidateItems = [
     { icon: 'dashboard', label: 'Dashboard', path: '/candidate' },
     { icon: 'person', label: 'Profile', path: '/candidate/profile' },
-    {icon:'history', label:'Attempts', path:'/candidate/history'} //not yet created
+    {icon:'history', label:'Attempts', path:'/candidate/history'} //manually created
   ];
 
   const menuItems = role === 'ADMIN' ? adminItems : candidateItems;

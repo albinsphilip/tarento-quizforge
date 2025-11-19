@@ -55,7 +55,7 @@ function AdminDashboard() {
 
   const activeCount = quizzes.filter(q => q.isActive).length;
   const inactiveCount = quizzes.length - activeCount;
-  const totalQuestions = quizzes.reduce((sum, q) => sum + (q.questions?.length || 0), 0);
+  const totalQuestions = quizzes.reduce((sum, q) => sum + (q.questions?.length || 0), 0); //remove this line
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -84,7 +84,7 @@ function AdminDashboard() {
           )}
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
           <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
@@ -121,7 +121,7 @@ function AdminDashboard() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            {/*<div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 font-medium">Total Questions</p>
@@ -131,7 +131,7 @@ function AdminDashboard() {
                   <span className="material-symbols-outlined text-white text-xl">list</span>
                 </div>
               </div>
-            </div>
+            </div>*/}
           </div>
 
           {/* Quizzes Section */}
@@ -197,7 +197,7 @@ function AdminDashboard() {
                         <td className="px-6 py-4 text-sm text-gray-700">
                           <div className="flex items-center gap-2">
                             <span className="material-symbols-outlined text-lg text-gray-400">list</span>
-                            {quiz.questions?.length || 0}
+                            {quiz.totalQuestions || 0}
                           </div>
                         </td>
                         <td className="px-6 py-4">
