@@ -71,7 +71,7 @@ function CandidateDashboard() {
         <div className="bg-white border-b border-gray-200">
           <div className="px-8 py-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-1">
-              Welcome back, {user?.name || 'Candidate'}! 👋
+              Welcome back, {user?.name || 'Candidate'}!
             </h1>
             <p className="text-gray-600">Ready to take on a new challenge? Let's get started!</p>
           </div>
@@ -148,12 +148,12 @@ function CandidateDashboard() {
                     
                     <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
-                        <span className="material-symbols-outlined text-lg">list</span>
-                        <span>{quiz.questions?.length || 0} questions</span>
+                      <span className="material-symbols-outlined text-lg">list</span>
+                      <span>{quiz.totalQuestions||0} question</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="material-symbols-outlined text-lg">timer</span>
-                        <span>{quiz.duration} min</span>
+                      <span className="material-symbols-outlined text-lg">timer</span>
+                      <span>{quiz.duration || 0} min</span>
                       </div>
                     </div>
                     

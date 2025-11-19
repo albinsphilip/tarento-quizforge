@@ -7,6 +7,7 @@ import QuizResults from './pages/QuizResults'
 import CreateQuiz from './pages/CreateQuiz'
 import EditQuiz from './pages/EditQuiz'
 import CandidateProfile from './pages/CandidateProfile'
+import QuizHistory from './pages/QuizHistory'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/candidate/quiz/:quizId" element={<QuizTaking />} />
         <Route path="/candidate/results/:attemptId" element={<QuizResults />} />
         <Route path="/candidate/*" element={<CandidateDashboard />} />
+        <Route path="/candidate/history" element={<QuizHistory/>}/> //not yet created
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/quiz/create" element={<CreateQuiz />} />
         <Route path="/admin/quiz/edit/:quizId" element={<EditQuiz />} />
