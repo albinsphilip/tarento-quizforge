@@ -28,7 +28,9 @@ public record AdminAttemptResponse(
     LocalDateTime submittedAt,
     Integer score,
     Integer totalPoints,
-    String status
+    String status,
+    Long timeTakenMinutes,
+    Boolean exceededTimeLimit
 ) {}
 ```
 
@@ -38,6 +40,8 @@ public record AdminAttemptResponse(
 - **Timing Data**: Tracks `startedAt` and `submittedAt` timestamps
 - **Score Metrics**: Full score and total points for percentage calculations
 - **Status Tracking**: Current attempt status (IN_PROGRESS, SUBMITTED, EVALUATED)
+- **Timer Tracking**: `timeTakenMinutes` records actual time spent on quiz
+- **Time Limit Validation**: `exceededTimeLimit` flag indicates if quiz was submitted after time expired
 
 ---
 
@@ -162,7 +166,9 @@ private AdminAttemptResponse toAdminAttemptResponse(QuizAttempt attempt) {
             attempt.getSubmittedAt(),
             attempt.getScore(),
             attempt.getTotalPoints(),
-            attempt.getStatus().name()
+            attempt.getStatus().name(),
+            attempt.getTimeTakenMinutes(),
+            attempt.getExceededTimeLimit()
     );
 }
 ```
@@ -241,9 +247,11 @@ public class AdminService {
                 attempt.getUser().getEmail(),
                 attempt.getStartedAt(),
                 attempt.getSubmittedAt(),
-                attempt.getScore(),
-                attempt.getTotalPoints(),
-                attempt.getStatus().name()
+            attempt.getScore(),
+            attempt.getTotalPoints(),
+            attempt.getStatus().name(),
+            attempt.getTimeTakenMinutes(),
+            attempt.getExceededTimeLimit()
         );
     }
 
@@ -253,9 +261,107 @@ public class AdminService {
 
 ---
 
-## 4. Entity Relationships
+## 4. Timer Tracking Implementation
 
-### QuizAttempt Model Reference
+### QuizAttempt Entity Changes
+**File:** `backend/src/main/java/com/quizforge/model/QuizAttempt.java`
+
+**New Fields Added:**
+```java
+@Column(name = "time_taken_minutes")
+private Long timeTakenMinutes;
+
+@Column(name = "exceeded_time_limit")
+private Boolean exceededTimeLimit = false;
+```
+
+**Purpose:**
+- `timeTakenMinutes`: Stores the actual duration from quiz start to submission
+- `exceededTimeLimit`: Boolean flag indicating if the candidate exceeded the allowed quiz duration
+
+### CandidateService Timer Logic
+**File:** `backend/src/main/java/com/quizforge/service/CandidateService.java`
+
+**Implementation in submitQuiz() method:**
+```java
+@Transactional
+public AttemptResponse submitQuiz(SubmitQuizRequest request, String candidateEmail) {
+    QuizAttempt attempt = attemptRepository.findById(request.attemptId())
+            .orElseThrow(() -> new ResourceNotFoundException("QuizAttempt", request.attemptId()));
+
+    // ... authorization and status checks ...
+
+    // Calculate time taken and validate time limit
+    Quiz quiz = attempt.getQuiz();
+    LocalDateTime now = LocalDateTime.now();
+    long elapsedMinutes = java.time.Duration.between(attempt.getStartedAt(), now).toMinutes();
+    
+    attempt.setTimeTakenMinutes(elapsedMinutes);
+    
+    if (elapsedMinutes > quiz.getDuration()) {
+        attempt.setExceededTimeLimit(true);
+        System.out.println("Warning: Quiz submitted after time limit. Elapsed: " + elapsedMinutes + " minutes, Allowed: " + quiz.getDuration() + " minutes");
+    } else {
+        attempt.setExceededTimeLimit(false);
+    }
+
+    // ... rest of submission logic ...
+}
+```
+
+**Key Logic:**
+1. **Time Calculation**: Uses `Duration.between()` to calculate elapsed minutes from `startedAt` to submission time
+2. **Validation**: Compares elapsed time against quiz duration limit
+3. **Flagging**: Sets `exceededTimeLimit` to true if candidate took longer than allowed
+4. **Logging**: Outputs warning to console for monitoring purposes
+5. **Persistence**: Saves both fields to database for analytics
+
+### AttemptResponse DTO Update
+**File:** `backend/src/main/java/com/quizforge/dto/AttemptResponse.java`
+
+```java
+public record AttemptResponse(
+    Long id,
+    Long quizId,
+    String quizTitle,
+    LocalDateTime startedAt,
+    LocalDateTime submittedAt,
+    Integer score,
+    Integer totalPoints,
+    String status,
+    Long timeTakenMinutes,      // NEW
+    Boolean exceededTimeLimit   // NEW
+) {}
+```
+
+**Impact:**
+- All candidate-facing API endpoints now include timer data
+- QuizResults page can display time taken
+- Frontend can show warnings for exceeded time limits
+
+### Mapper Update
+**File:** `backend/src/main/java/com/quizforge/service/CandidateService.java`
+
+```java
+private AttemptResponse toAttemptResponse(QuizAttempt attempt) {
+    return new AttemptResponse(
+            attempt.getId(),
+            attempt.getQuiz().getId(),
+            attempt.getQuiz().getTitle(),
+            attempt.getStartedAt(),
+            attempt.getSubmittedAt(),
+            attempt.getScore(),
+            attempt.getTotalPoints(),
+            attempt.getStatus().name(),
+            attempt.getTimeTakenMinutes(),      // NEW
+            attempt.getExceededTimeLimit()      // NEW
+    );
+}
+```
+
+---
+
+## 5. Entity Relationships### QuizAttempt Model Reference
 **File:** `backend/src/main/java/com/quizforge/model/QuizAttempt.java`
 
 ```java
@@ -288,6 +394,12 @@ public class QuizAttempt {
 
     @Column(name = "total_points")
     private Integer totalPoints;
+
+    @Column(name = "time_taken_minutes")
+    private Long timeTakenMinutes;
+
+    @Column(name = "exceeded_time_limit")
+    private Boolean exceededTimeLimit = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -334,7 +446,9 @@ Authorization: Bearer <jwt-token>
     "submittedAt": "2025-11-19T10:45:00",
     "score": 85,
     "totalPoints": 100,
-    "status": "EVALUATED"
+    "status": "EVALUATED",
+    "timeTakenMinutes": 15,
+    "exceededTimeLimit": false
   },
   {
     "id": 2,
@@ -346,7 +460,9 @@ Authorization: Bearer <jwt-token>
     "submittedAt": "2025-11-19T11:20:00",
     "score": 92,
     "totalPoints": 100,
-    "status": "EVALUATED"
+    "status": "EVALUATED",
+    "timeTakenMinutes": 20,
+    "exceededTimeLimit": false
   }
 ]
 ```
@@ -467,11 +583,15 @@ const fetchData = async () => {
 
 | File Path | Change Type | Description |
 |-----------|-------------|-------------|
-| `dto/AdminAttemptResponse.java` | **NEW** | Created DTO with candidate info |
+| `dto/AdminAttemptResponse.java` | **NEW** | Created DTO with candidate info and timer fields |
+| `dto/AttemptResponse.java` | **MODIFIED** | Added `timeTakenMinutes` and `exceededTimeLimit` fields |
+| `model/QuizAttempt.java` | **MODIFIED** | Added timer tracking fields to entity |
 | `controller/AdminController.java` | **MODIFIED** | Added `/attempts/all` endpoint |
-| `service/AdminService.java` | **MODIFIED** | Added `getAllAttempts()` and mapper methods |
+| `service/AdminService.java` | **MODIFIED** | Added `getAllAttempts()` and updated mapper with timer fields |
+| `service/CandidateService.java` | **MODIFIED** | Added timer calculation logic in `submitQuiz()`, updated mappers |
 | `frontend/src/utils/api.js` | **MODIFIED** | Added `getAllAttempts()` to adminAPI |
-| `frontend/src/pages/Analytics.jsx` | **MODIFIED** | Updated to use new API endpoint |
+| `frontend/src/pages/Analytics.jsx` | **MODIFIED** | Updated to use new API endpoint and display timer data |
+| `frontend/src/pages/QuizResults.jsx` | **MODIFIED** | Display time taken with exceeded warning |
 
 ---
 
@@ -528,6 +648,47 @@ curl -H "Authorization: Bearer <token>" \
 
 ---
 
+## 13. Timer Implementation Benefits
+
+### For Administrators
+1. **Performance Insights**: Track how long candidates take on average for each quiz
+2. **Time Limit Enforcement**: Identify candidates who exceeded allowed time
+3. **Quiz Difficulty Assessment**: Long completion times may indicate difficult questions
+4. **Cheating Detection**: Unusual timing patterns can flag suspicious behavior
+
+### For Candidates
+1. **Transparency**: See exactly how long they took on each quiz
+2. **Feedback**: Understand if time management affected their performance
+3. **Warnings**: Clear indication if they exceeded the time limit
+4. **Historical Data**: Compare timing across multiple attempts
+
+### Technical Benefits
+1. **Data Integrity**: Actual time measured server-side (not client-side timer)
+2. **No Manipulation**: Frontend timer countdown is for UX only; backend validates
+3. **Audit Trail**: Complete timing data stored for compliance/analytics
+4. **Backward Compatible**: Null values for old attempts (show as "N/A" in frontend)
+
+---
+
+## 14. Database Schema Updates
+
+### Migration Notes
+The new fields in `quiz_attempts` table:
+
+```sql
+ALTER TABLE quiz_attempts 
+ADD COLUMN time_taken_minutes BIGINT,
+ADD COLUMN exceeded_time_limit BOOLEAN DEFAULT FALSE;
+```
+
+**Important:**
+- Existing attempts will have `NULL` for `timeTakenMinutes` (expected behavior)
+- Frontend displays "N/A" for null values
+- Only new quiz submissions after this update will have timer data
+- No data migration needed for historical data
+
+---
+
 ## Conclusion
 
-These backend changes enable a comprehensive analytics dashboard for administrators, providing visibility into all quiz attempts across the platform with detailed candidate and performance metrics. The implementation follows RESTful best practices and maintains proper security controls.
+These backend changes enable a comprehensive analytics dashboard for administrators, providing visibility into all quiz attempts across the platform with detailed candidate and performance metrics, including accurate timer tracking and time limit validation. The implementation follows RESTful best practices, maintains proper security controls, and provides valuable insights for both admins and candidates.
