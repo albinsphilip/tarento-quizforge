@@ -15,28 +15,26 @@ api.interceptors.request.use(config => {
 // Response interceptor for unified response handling
 api.interceptors.response.use(
   response => {
-    // Extract data from unified response structure
-    const { success, data, message, error } = response.data;
-    
+    const { success, data } = response.data;
     if (success) {
-      return data; // Return only the data payload
-    } else {
-      // Handle error from unified response
-      throw new Error(error || message || 'An error occurred');
+      return data;
     }
+    // This shouldn't happen for successful HTTP responses
+    return Promise.reject(new Error(response.data.error || 'An error occurred'));
   },
   error => {
-    // Handle HTTP errors
-    if (error.response?.status === 401) {
-      // Token expired or invalid
+    // HTTP error responses (4xx, 5xx)
+    const errorData = error.response?.data;
+    const errorMessage = errorData?.error || errorData?.message || error.message || 'An error occurred';
+    
+    // Only redirect on 401 if user was authenticated
+    if (error.response?.status === 401 && localStorage.getItem('token')) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/';
     }
     
-    const errorData = error.response?.data;
-    const message = errorData?.error || errorData?.message || error.message || 'An error occurred';
-    throw new Error(message);
+    return Promise.reject(new Error(errorMessage));
   }
 );
 

@@ -11,7 +11,7 @@ function Analytics() {
   const [loading, setLoading] = useState(true);
   const [quizzes, setQuizzes] = useState([]);
   const [attempts, setAttempts] = useState([]);
-  const [selectedQuiz, setSelectedQuiz] = useState('all');
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [analytics, setAnalytics] = useState({
     totalAttempts: 0,
     totalCandidates: 0,
@@ -46,7 +46,13 @@ function Analytics() {
       
       setQuizzes(quizzesData);
       setAttempts(attemptsData);
-      calculateAnalytics(attemptsData, 'all');
+      
+      // Set default to first quiz if available
+      if (quizzesData.length > 0) {
+        const firstQuizId = quizzesData[0].id;
+        setSelectedQuiz(firstQuizId);
+        calculateAnalytics(attemptsData, firstQuizId);
+      }
     } catch (error) {
       console.error('Error fetching analytics:', error);
     } finally {
@@ -55,11 +61,7 @@ function Analytics() {
   };
 
   const calculateAnalytics = (attemptsData, quizFilter) => {
-    let filteredAttempts = attemptsData;
-    
-    if (quizFilter !== 'all') {
-      filteredAttempts = attemptsData.filter(a => a.quizId === parseInt(quizFilter));
-    }
+    const filteredAttempts = attemptsData.filter(a => a.quizId === parseInt(quizFilter));
 
     const totalAttempts = filteredAttempts.length;
     const uniqueCandidates = new Set(filteredAttempts.map(a => a.candidateEmail)).size;
@@ -194,7 +196,6 @@ function Analytics() {
               onChange={(e) => handleQuizFilter(e.target.value)}
               className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >
-              <option value="all">All Quizzes</option>
               {quizzes.map(quiz => (
                 <option key={quiz.id} value={quiz.id}>{quiz.title}</option>
               ))}
@@ -218,7 +219,7 @@ function Analytics() {
             <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 font-medium">Total Candidates</p>
+                  <p className="text-sm text-gray-600 font-medium">Quiz Takers</p>
                   <p className="text-3xl font-bold text-gray-900 mt-2">{analytics.totalCandidates}</p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
@@ -358,7 +359,9 @@ function Analytics() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {(selectedQuiz === 'all' ? attempts : attempts.filter(a => a.quizId === parseInt(selectedQuiz)))
+                    {attempts
+                      .filter(a => a.quizId === parseInt(selectedQuiz))
+                      .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
                       .slice(0, 10)
                       .map((attempt) => {
                         const percentage = attempt.totalPoints > 0 

@@ -152,29 +152,29 @@ function QuizResults() {
                     strokeLinecap="round"
                   />
                 </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className={`text-5xl font-bold ${getStatusColor()}`}>
+                <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+                  <span className={`text-5xl font-bold leading-none ${getStatusColor()}`}>
                     {percentage}%
                   </span>
-                  <span className="text-gray-600 text-sm mt-1">Score</span>
+                  <span className="text-gray-600 text-sm mt-2">Score</span>
                 </div>
               </div>
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
               <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                 <p className="text-slate-600 text-sm mb-1 font-medium">Your Score</p>
                 <p className="text-2xl font-bold text-slate-900">
                   {attempt.score} / {attempt.totalPoints}
                 </p>
               </div>
-              <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+              {/* <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                 <p className="text-slate-600 text-sm mb-1 font-medium">Percentage</p>
                 <p className={`text-2xl font-bold ${getStatusColor()}`}>
                   {percentage}%
                 </p>
-              </div>
+              </div> */}
               <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                 <p className="text-slate-600 text-sm mb-1 font-medium">Time Taken</p>
                 <p className="text-2xl font-bold text-slate-900">
@@ -338,14 +338,14 @@ function QuizResults() {
         )}
 
         {/* Action Buttons */}
-        <div className="mt-8 flex justify-center space-x-4">
+        {/* <div className="mt-8 flex justify-center space-x-4">
           <button
             onClick={() => navigate('/candidate')}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
           >
             Back to Dashboard
           </button>
-        </div>
+        </div> */}
       </main>
     </div>
   );

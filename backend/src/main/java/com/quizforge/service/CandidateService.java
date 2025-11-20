@@ -79,7 +79,15 @@ public class CandidateService {
         // Calculate time taken and validate time limit
         Quiz quiz = attempt.getQuiz();
         LocalDateTime now = LocalDateTime.now();
-        long elapsedMinutes = java.time.Duration.between(attempt.getStartedAt(), now).toMinutes();
+        LocalDateTime startTime = attempt.getStartedAt();
+        
+        // Handle case where startedAt might be null (legacy data)
+        if (startTime == null) {
+            startTime = now.minusMinutes(quiz.getDuration());
+            attempt.setStartedAt(startTime);
+        }
+        
+        long elapsedMinutes = java.time.Duration.between(startTime, now).toMinutes();
         
         attempt.setTimeTakenMinutes(elapsedMinutes);
         

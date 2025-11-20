@@ -26,8 +26,8 @@ function Login() {
       }));
       navigate(data.role === 'ADMIN' ? '/admin' : '/candidate');
     } catch (err) {
-      setError(err.message || 'Login failed. Please check your credentials.');
-    } finally {
+      const errorMessage = err.message || 'Login failed. Please check your credentials.';
+      setError(errorMessage);
       setLoading(false);
     }
   };
