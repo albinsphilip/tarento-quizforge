@@ -38,6 +38,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                // Unified endpoints - accessible by both roles
+                .requestMatchers("/api/quizzes/**").authenticated()
+                // Legacy endpoints - keep for backward compatibility
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/candidate/**").hasRole("CANDIDATE")
                 .anyRequest().authenticated()

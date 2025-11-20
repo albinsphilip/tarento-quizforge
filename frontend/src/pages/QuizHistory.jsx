@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { candidateAPI } from '../utils/api';
+import { quizAPI } from '../utils/api';
 
 function QuizHistory() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ function QuizHistory() {
 
   const fetchHistory = async () => {
     try {
-      const attempts = await candidateAPI.getMyAttempts();
+      const attempts = await quizAPI.getAttempts();
 
       // Sort attempts by submittedAt (latest to oldest, null values at end)
       const sortedAttempts = attempts.sort((a, b) => {

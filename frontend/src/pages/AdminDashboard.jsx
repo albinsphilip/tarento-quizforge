@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { adminAPI } from '../utils/api';
+import { quizAPI } from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -31,7 +31,7 @@ function AdminDashboard() {
   const fetchQuizzes = async () => {
     try {
       setError('');
-      const data = await adminAPI.getQuizzes();
+      const data = await quizAPI.getQuizzes();
       setQuizzes(data);
     } catch (err) {
       setError(err.message);
@@ -41,13 +41,28 @@ function AdminDashboard() {
   };
 
   const handleDelete = async (id, title) => {
-    if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) return;
-    
     try {
-      await adminAPI.deleteQuiz(id);
+      // Check if quiz can be deleted
+      const isDeletable = await quizAPI.isQuizDeletable(id);
+      
+      if (!isDeletable) {
+        alert(
+          `❌ Cannot delete "${title}"\n\n` +
+          `This quiz has already been attempted by candidates.\n\n` +
+          `To hide it from candidates, set it to Inactive instead by editing the quiz.`
+        );
+        return;
+      }
+      
+      if (!confirm(`Are you sure you want to permanently delete "${title}"?\n\nThis action cannot be undone.`)) {
+        return;
+      }
+      
+      await quizAPI.deleteQuiz(id);
       setQuizzes(quizzes.filter(q => q.id !== id));
+      alert(`✅ Quiz "${title}" deleted successfully!`);
     } catch (err) {
-      alert('Failed to delete quiz: ' + err.message);
+      alert('❌ Failed to delete quiz: ' + err.message);
     }
   };
 

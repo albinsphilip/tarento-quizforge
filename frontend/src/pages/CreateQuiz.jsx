@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminAPI } from '../utils/api';
+import { quizAPI } from '../utils/api';
 import QuizForm from '../components/QuizForm';
 
 const CreateQuiz = () => {
@@ -42,8 +42,8 @@ const CreateQuiz = () => {
         }))
       };
 
-      await adminAPI.createQuiz(payload);
-      alert('✅ Quiz created successfully!');
+      await quizAPI.createQuiz(payload);
+      alert('Quiz created successfully!');
       navigate('/admin');
     } catch (error) {
       alert('❌ Failed to create quiz: ' + error.message);

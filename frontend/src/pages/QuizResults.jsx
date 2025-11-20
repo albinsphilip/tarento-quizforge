@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { candidateAPI } from '../utils/api';
+import { quizAPI } from '../utils/api';
 
 function QuizResults() {
   const { attemptId } = useParams();
@@ -15,7 +15,7 @@ function QuizResults() {
 
   const fetchAttemptResults = async () => {
     try {
-      const data = await candidateAPI.getAttempt(attemptId);
+      const data = await quizAPI.getAttempt(attemptId);
       setAttempt(data);
     } catch (err) {
       console.error('Error fetching results:', err);

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { candidateAPI } from '../utils/api';
+import { quizAPI } from '../utils/api';
 
 const QuizTaking = () => {
   const navigate = useNavigate();
@@ -79,7 +79,7 @@ const QuizTaking = () => {
   const startQuizAttempt = async () => {
     try {
       // Fetch quiz details first
-      const quizData = await candidateAPI.getQuiz(quizId);
+      const quizData = await quizAPI.getQuiz(quizId);
       
       // Initialize answers object BEFORE starting attempt
       const initialAnswers = {};
@@ -95,7 +95,7 @@ const QuizTaking = () => {
       setQuiz(quizData);
       
       // Now start the attempt
-      const attemptData = await candidateAPI.startQuiz(quizId);
+      const attemptData = await quizAPI.startQuiz(quizId);
       setAttemptId(attemptData.id);
       setTimeLeft(quizData.duration * 60); // Convert minutes to seconds
       setLoading(false);
@@ -217,7 +217,7 @@ const QuizTaking = () => {
         answers: answerRequests
       };
 
-      const result = await candidateAPI.submitQuiz(submitData);
+      const result = await quizAPI.submitQuiz(submitData);
       
       // Show success message and navigate to results
       if (showAlerts) {

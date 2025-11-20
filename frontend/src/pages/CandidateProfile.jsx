@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { candidateAPI } from '../utils/api';
+import { quizAPI } from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -23,7 +23,7 @@ const CandidateProfile = () => {
 
   const fetchData = async () => {
     try {
-      const data = await candidateAPI.getMyAttempts();
+      const data = await quizAPI.getAttempts();
       setAttempts(data);
     } catch (error) {
       console.error('Error fetching attempts:', error);

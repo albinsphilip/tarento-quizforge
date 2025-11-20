@@ -1,7 +1,6 @@
 package com.quizforge.exception;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.quizforge.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +24,7 @@ public class GlobalExceptionHandler {
      * Returns field-specific error messages
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         
         // Extract field errors
@@ -36,164 +34,61 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
 
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.BAD_REQUEST.value(),
-            "Validation Failed",
-            errors.toString(),
-            LocalDateTime.now()
-        );
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error("Validation Failed", errors.toString()));
     }
 
     /**
      * Handles resource not found exceptions
      */
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.NOT_FOUND.value(),
-            "Resource Not Found",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    public ResponseEntity<ApiResponse<Object>> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ex.getMessage()));
     }
 
     /**
      * Handles unauthorized access (wrong credentials, invalid token)
      */
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.UNAUTHORIZED.value(),
-            "Unauthorized",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    public ResponseEntity<ApiResponse<Object>> handleUnauthorized(UnauthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(ex.getMessage()));
     }
 
     /**
      * Handles forbidden access (user doesn't have required role)
      */
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.FORBIDDEN.value(),
-            "Access Denied",
-            "You don't have permission to access this resource",
-            LocalDateTime.now()
-        );
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    public ResponseEntity<ApiResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error("You don't have permission to access this resource"));
     }
 
     /**
      * Handles illegal argument exceptions (bad input)
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.BAD_REQUEST.value(),
-            "Invalid Input",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    public ResponseEntity<ApiResponse<Object>> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
     }
 
     /**
      * Handles runtime exceptions (business logic errors)
      */
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            "Internal Server Error",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    public ResponseEntity<ApiResponse<Object>> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(ex.getMessage()));
     }
 
     /**
      * Catches all other exceptions
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            "Internal Server Error",
-            "An unexpected error occurred: " + ex.getMessage(),
-            LocalDateTime.now()
-        );
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-    }
-
-    /**
-     * Standard error response structure
-     * Uses Jackson annotations for proper JSON serialization
-     */
-    public static class ErrorResponse {
-        
-        @JsonProperty("status")
-        private int status;
-        
-        @JsonProperty("error")
-        private String error;
-        
-        @JsonProperty("message")
-        private String message;
-        
-        @JsonProperty("timestamp")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        private LocalDateTime timestamp;
-
-        public ErrorResponse(int status, String error, String message, LocalDateTime timestamp) {
-            this.status = status;
-            this.error = error;
-            this.message = message;
-            this.timestamp = timestamp;
-        }
-
-        // Getters
-        public int getStatus() {
-            return status;
-        }
-
-        public String getError() {
-            return error;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public LocalDateTime getTimestamp() {
-            return timestamp;
-        }
-
-        // Setters
-        public void setStatus(int status) {
-            this.status = status;
-        }
-
-        public void setError(String error) {
-            this.error = error;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-
-        public void setTimestamp(LocalDateTime timestamp) {
-            this.timestamp = timestamp;
-        }
+    public ResponseEntity<ApiResponse<Object>> handleGenericException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error("An unexpected error occurred: " + ex.getMessage()));
     }
 }

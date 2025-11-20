@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { adminAPI, candidateAPI } from '../utils/api';
+import { quizAPI } from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -40,8 +40,8 @@ function Analytics() {
   const fetchData = async () => {
     try {
       const [quizzesData, attemptsData] = await Promise.all([
-        adminAPI.getQuizzes(),
-        adminAPI.getAllAttempts()
+        quizAPI.getQuizzes(),
+        quizAPI.getAttempts()
       ]);
       
       setQuizzes(quizzesData);

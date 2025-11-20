@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record QuestionRequest(
+    Long id, // Optional: null for new questions, present for existing
+    
     @NotBlank(message = "Question text is required")
     String questionText,
     

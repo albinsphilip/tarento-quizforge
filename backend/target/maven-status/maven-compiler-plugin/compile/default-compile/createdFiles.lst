@@ -1,4 +1,5 @@
 com/quizforge/model/Question.class
+com/quizforge/dto/ApiResponse.class
 com/quizforge/dto/AttemptResponse.class
 com/quizforge/model/User.class
 com/quizforge/security/SecurityConfig.class
@@ -25,6 +26,7 @@ com/quizforge/dto/AnswerRequest.class
 com/quizforge/security/JwtUtil.class
 com/quizforge/dto/SubmitQuizRequest.class
 com/quizforge/dto/QuestionResponse.class
+com/quizforge/controller/QuizController.class
 com/quizforge/dto/LoginRequest.class
 com/quizforge/controller/AdminController.class
 com/quizforge/dto/QuizSummaryResponse.class
@@ -39,7 +41,6 @@ com/quizforge/model/Quiz.class
 com/quizforge/QuizForgeApplication.class
 com/quizforge/exception/GlobalExceptionHandler.class
 com/quizforge/repository/AnswerRepository.class
-com/quizforge/exception/GlobalExceptionHandler$ErrorResponse.class
 com/quizforge/service/AuthService.class
 com/quizforge/model/QuizAttempt$AttemptStatus.class
 com/quizforge/repository/QuizAttemptRepository.class

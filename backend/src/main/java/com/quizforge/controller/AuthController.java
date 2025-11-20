@@ -1,5 +1,6 @@
 package com.quizforge.controller;
 
+import com.quizforge.dto.ApiResponse;
 import com.quizforge.dto.LoginRequest;
 import com.quizforge.dto.LoginResponse;
 import com.quizforge.service.AuthService;
@@ -23,8 +24,8 @@ public class AuthController {
         summary = "Login and get JWT token",
         description = "Use admin@quizforge.com for ADMIN role,other email for CANDIDATE role."
     )
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authService.login(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.success("Login successful", response));
     }
 }

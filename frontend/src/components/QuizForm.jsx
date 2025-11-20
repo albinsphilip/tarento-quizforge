@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
+const QuizForm = ({ initialData, onSubmit, submitLabel, disabled = false }) => {
   const [quizData, setQuizData] = useState(initialData.quizData);
   const [questions, setQuestions] = useState(initialData.questions);
   const [loading, setLoading] = useState(false);
@@ -160,25 +160,32 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
               <span className="material-symbols-outlined text-blue-600 text-lg">quiz</span>
             </div>
             <h2 className="text-lg font-semibold text-gray-900">Questions</h2>
+            {disabled && (
+              <span className="text-xs text-amber-600 font-medium bg-amber-50 px-2 py-1 rounded">
+                Read-only
+              </span>
+            )}
           </div>
-          <button 
-            type="button" 
-            onClick={addQuestion} 
-            className="btn-primary flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined">add</span>
-            Add Question
-          </button>
+          {!disabled && (
+            <button 
+              type="button" 
+              onClick={addQuestion} 
+              className="btn-primary flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined">add</span>
+              Add Question
+            </button>
+          )}
         </div>
         
         {questions.map((q, idx) => (
-          <div key={q.id} className="card border-l-4 border-l-indigo-500 border-gray-200">
+          <div key={q.id} className={`card border-l-4 ${disabled ? 'border-l-gray-400 bg-gray-50' : 'border-l-indigo-500'} border-gray-200`}>
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-2">
                 <span className="badge badge-info text-xs">Q{idx + 1}</span>
                 <h3 className="text-base font-medium text-gray-900">Question {idx + 1}</h3>
               </div>
-              {questions.length > 1 && (
+              {questions.length > 1 && !disabled && (
                 <button 
                   type="button" 
                   onClick={() => removeQuestion(q.id)} 
@@ -201,6 +208,7 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
                   onChange={(e) => updateQuestion(q.id, 'questionText', e.target.value)} 
                   className="input-field" 
                   placeholder="Enter your question here..."
+                  disabled={disabled}
                   required 
                 />
               </div>
@@ -212,6 +220,7 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
                     value={q.type} 
                     onChange={(e) => changeQuestionType(q.id, e.target.value)} 
                     className="input-field"
+                    disabled={disabled}
                   >
                     <option value="MULTIPLE_CHOICE">Multiple Choice</option>
                     <option value="TRUE_FALSE">True/False</option>
@@ -227,6 +236,7 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
                     className="input-field" 
                     min="1" 
                     max="10"
+                    disabled={disabled}
                   />
                 </div>
               </div>
@@ -246,6 +256,7 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
                           onChange={() => setCorrect(q.id, opt.id)} 
                           name={`correct-${q.id}`}
                           className="w-4 h-4 text-green-600 focus:ring-green-500"
+                          disabled={disabled}
                         />
                         <input 
                           type="text" 
@@ -253,8 +264,9 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
                           onChange={(e) => updateOption(q.id, opt.id, 'optionText', e.target.value)} 
                           className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                           placeholder={`Option ${String.fromCharCode(65 + optIdx)}`}
+                          disabled={disabled}
                         />
-                        {q.type !== 'TRUE_FALSE' && q.options.length > 2 && (
+                        {q.type !== 'TRUE_FALSE' && q.options.length > 2 && !disabled && (
                           <button 
                             type="button" 
                             onClick={() => removeOption(q.id, opt.id)} 
@@ -266,7 +278,7 @@ const QuizForm = ({ initialData, onSubmit, submitLabel }) => {
                         )}
                       </div>
                     ))}
-                    {q.type === 'MULTIPLE_CHOICE' && (
+                    {q.type === 'MULTIPLE_CHOICE' && !disabled && (
                       <button 
                         type="button" 
                         onClick={() => addOption(q.id)} 

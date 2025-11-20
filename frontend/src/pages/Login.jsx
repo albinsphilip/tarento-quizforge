@@ -46,7 +46,7 @@ function Login() {
               QuizForge
             </h1> */}
             <img src={quizforgeLogo} alt="QuizForge Logo" className="scale-75 mx-auto" />
-            <p className="text-gray-600 text-sm pt-1">Quiz Management System</p>
+            <p className="text-gray-600 text-sm pt-1">Assessment Platform</p>
           </div>
 
           {/* Error Alert */}

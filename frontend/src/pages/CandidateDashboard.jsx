@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { candidateAPI } from '../utils/api';
+import { quizAPI } from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -34,8 +34,8 @@ function CandidateDashboard() {
   const fetchData = async () => {
     try {
       const [quizzes, attempts] = await Promise.all([
-        candidateAPI.getAvailableQuizzes(),
-        candidateAPI.getMyAttempts()
+        quizAPI.getQuizzes(),
+        quizAPI.getAttempts()
       ]);
       
       setAvailableQuizzes(quizzes);
