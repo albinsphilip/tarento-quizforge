@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../utils/api';
+import quizforgeLogo from '../assets/Quizforge-nobg.svg';
 
 function Login() {
   const navigate = useNavigate();
@@ -38,13 +39,14 @@ function Login() {
         <div className="bg-white shadow-lg rounded-lg p-8 border border-gray-200">
           {/* Logo & Header */}
           <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-lg flex items-center justify-center mx-auto mb-4 shadow-sm">
+            {/* <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-lg flex items-center justify-center mx-auto mb-4 shadow-sm">
               <span className="material-symbols-outlined text-white text-2xl">quiz</span>
             </div>
             <h1 className="text-2xl font-extrabold tracking-wider text-gray-900 mb-2">
               QuizForge
-            </h1>
-            <p className="text-gray-600 text-sm pt-6">Quiz Management System</p>
+            </h1> */}
+            <img src={quizforgeLogo} alt="QuizForge Logo" className="scale-75 mx-auto" />
+            <p className="text-gray-600 text-sm pt-1">Quiz Management System</p>
           </div>
 
           {/* Error Alert */}

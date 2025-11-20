@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import logoSvg from '../assets/Quizforge-nobg.svg';
 
 const Sidebar = ({ role, currentPath, userName }) => {
   const navigate = useNavigate();
@@ -24,12 +25,19 @@ const Sidebar = ({ role, currentPath, userName }) => {
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm">
       {/* Logo */}
-      <div className="p-6 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white">
-        <div className="flex items-center gap-3">
+      <div className="px-6 pt-4 pb-4 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white">
+        {/* <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-lg flex items-center justify-center shadow-sm">
             <span className="material-symbols-outlined text-white text-xl">quiz</span>
           </div>
           <span className="text-lg font-bold text-gray-900">QuizForge</span>
+        </div> */}
+        <div className="flex items-center justify-center">
+          <img 
+            src={logoSvg} 
+            alt="QuizForge Logo" 
+            className="scale-75"
+          />
         </div>
       </div>
 

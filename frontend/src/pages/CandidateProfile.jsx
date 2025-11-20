@@ -62,9 +62,9 @@ const CandidateProfile = () => {
                 <span className="text-4xl font-bold">{user?.name?.charAt(0)?.toUpperCase() || 'C'}</span>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-900 mb-1">{user?.name || 'Candidate'}</h2>
+                <h2 className="text-xl font-bold text-slate-900 mb-2">{user?.name?.split(' ')[0] || 'Candidate'}</h2>
                 <p className="text-slate-600 text-sm">{user?.email}</p>
-                <span className="inline-block mt-2 badge badge-info">Candidate</span>
+                {/*<span className="inline-block mt-2 badge badge-info">Candidate</span>*/}
               </div>
             </div>
 
@@ -123,7 +123,8 @@ const CandidateProfile = () => {
                 </div>
               </div>
 
-              {/* Recent Activity */}
+              {/* 
+              // Recent Activity
               {attempts.length > 0 && (
                 <div className="mt-8 pt-8 border-t border-gray-200">
                   <h4 className="text-lg font-bold text-gray-900 mb-4">Recent Activity</h4>
@@ -166,7 +167,7 @@ const CandidateProfile = () => {
                     })}
                   </div>
                 </div>
-              )}
+              )}*/}
             </div>
           )}
 

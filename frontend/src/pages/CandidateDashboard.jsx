@@ -79,7 +79,7 @@ function CandidateDashboard() {
               <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-medium mb-1">Quizzes Completed</p>
+                    <p className="text-gray-600 text-sm font-medium mb-1">Quizzes Attempted</p>
                     <p className="text-2xl font-bold text-gray-900">{stats.completed}</p>
                   </div>
                   <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center shadow-sm">
