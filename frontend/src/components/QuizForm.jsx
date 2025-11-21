@@ -166,7 +166,7 @@ const QuizForm = ({ initialData, onSubmit, submitLabel, disabled = false }) => {
               </span>
             )}
           </div>
-          {!disabled && (
+          {/* {!disabled && (
             <button 
               type="button" 
               onClick={addQuestion} 
@@ -175,7 +175,7 @@ const QuizForm = ({ initialData, onSubmit, submitLabel, disabled = false }) => {
               <span className="material-symbols-outlined">add</span>
               Add Question
             </button>
-          )}
+          )} */}
         </div>
         
         {questions.map((q, idx) => (
@@ -294,6 +294,17 @@ const QuizForm = ({ initialData, onSubmit, submitLabel, disabled = false }) => {
             </div>
           </div>
         ))}
+        
+        {!disabled && (
+          <button 
+            type="button" 
+            onClick={addQuestion} 
+            className="btn-primary flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined">add</span>
+            Add Question
+          </button>
+        )}
       </div>
 
       {/* Submit */}
