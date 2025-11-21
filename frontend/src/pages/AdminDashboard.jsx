@@ -155,7 +155,7 @@ function AdminDashboard() {
               <h2 className="text-lg font-semibold text-gray-900">Quiz Management</h2>
               <button 
                 onClick={() => navigate('/admin/quiz/create')} 
-                className="btn-primary inline-flex items-center gap-1.5"
+                className="btn-primary inline-flex items-center gap-1.5 px-3 py-1"
               >
                 <span className="material-symbols-outlined text-lg">add</span>
                 Create Quiz
