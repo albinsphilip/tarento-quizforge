@@ -1,6 +1,7 @@
 package com.quizforge.controller;
 
 import com.quizforge.dto.AttemptResponse;
+import com.quizforge.dto.DetailedAttemptResponse;
 import com.quizforge.dto.QuizResponse;
 import com.quizforge.dto.QuizSummaryResponse;
 import com.quizforge.dto.SubmitQuizRequest;
@@ -64,7 +65,7 @@ public class CandidateController {
 
     @GetMapping("/attempts/{attemptId}")
     @Operation(summary = "Get attempt result", description = "View detailed results of a specific attempt")
-    public ResponseEntity<AttemptResponse> getAttemptResult(
+    public ResponseEntity<DetailedAttemptResponse> getAttemptResult(
             @PathVariable Long attemptId,
             Authentication authentication) {
         String candidateEmail = authentication.getName();

@@ -399,9 +399,9 @@ function Analytics() {
                               </span>
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-700">
-                              {attempt.timeTakenMinutes ? (
+                              {attempt.timeTakenMinutes != null ? (
                                 <div>
-                                  <span>{attempt.timeTakenMinutes} min</span>
+                                  <span>{Math.floor(attempt.timeTakenMinutes / 60)}:{(attempt.timeTakenMinutes % 60).toString().padStart(2, '0')}</span>
                                   {attempt.exceededTimeLimit && (
                                     <span className="ml-2 text-xs text-red-600">⚠️</span>
                                   )}

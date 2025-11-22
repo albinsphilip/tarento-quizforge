@@ -14,6 +14,7 @@
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/service/AdminService.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/security/JwtUtil.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/repository/UserRepository.java
+/home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/dto/CandidateAnswerResponse.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/config/DataSeeder.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/model/Option.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/security/SecurityConfig.java
@@ -41,3 +42,4 @@
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/repository/QuestionRepository.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/repository/AnswerRepository.java
 /home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/controller/AdminController.java
+/home/albinsphilip/Desktop/proj/quizforge/backend/src/main/java/com/quizforge/dto/DetailedAttemptResponse.java

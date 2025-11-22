@@ -1,6 +1,8 @@
 package com.quizforge.controller;
 
 import com.quizforge.dto.*;
+import com.quizforge.dto.DetailedAttemptResponse;
+import com.quizforge.dto.CandidateAnswerResponse;
 import com.quizforge.service.AdminService;
 import com.quizforge.service.CandidateService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -151,11 +153,11 @@ public class QuizController {
 
     @GetMapping("/attempts/{attemptId}")
     @Operation(summary = "Get attempt result", description = "View detailed results of a specific attempt")
-    public ResponseEntity<ApiResponse<AttemptResponse>> getAttemptResult(
+    public ResponseEntity<ApiResponse<DetailedAttemptResponse>> getAttemptResult(
             @PathVariable Long attemptId,
             Authentication authentication) {
         String email = authentication.getName();
-        AttemptResponse response = candidateService.getAttemptResult(attemptId, email);
+        DetailedAttemptResponse response = candidateService.getAttemptResult(attemptId, email);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

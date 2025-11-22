@@ -16,6 +16,8 @@ function QuizResults() {
   const fetchAttemptResults = async () => {
     try {
       const data = await quizAPI.getAttempt(attemptId);
+      console.log('Attempt data received:', data);
+      console.log('timeTakenMinutes:', data.timeTakenMinutes);
       setAttempt(data);
     } catch (err) {
       console.error('Error fetching results:', err);
@@ -178,7 +180,12 @@ function QuizResults() {
               <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                 <p className="text-slate-600 text-sm mb-1 font-medium">Time Taken</p>
                 <p className="text-2xl font-bold text-slate-900">
-                  {attempt.timeTakenMinutes ? `${attempt.timeTakenMinutes} min` : 'N/A'}
+                  {attempt.timeTakenMinutes != null ? (() => {
+                    const totalSeconds = attempt.timeTakenMinutes;
+                    const mins = Math.floor(totalSeconds / 60);
+                    const secs = totalSeconds % 60;
+                    return `${mins}:${secs.toString().padStart(2, '0')}`;
+                  })() : 'N/A'}
                 </p>
                 {attempt.exceededTimeLimit && (
                   <p className="text-xs text-red-600 mt-1">⚠️ Exceeded time limit</p>

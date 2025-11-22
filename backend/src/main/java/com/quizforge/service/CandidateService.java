@@ -1,6 +1,8 @@
 package com.quizforge.service;
 
 import com.quizforge.dto.*;
+import com.quizforge.dto.DetailedAttemptResponse;
+import com.quizforge.dto.CandidateAnswerResponse;
 import com.quizforge.exception.ResourceNotFoundException;
 import com.quizforge.model.*;
 import com.quizforge.repository.*;
@@ -87,10 +89,11 @@ public class CandidateService {
             attempt.setStartedAt(startTime);
         }
         
-        long elapsedMinutes = java.time.Duration.between(startTime, now).toMinutes();
+        long elapsedSeconds = java.time.Duration.between(startTime, now).getSeconds();
         
-        attempt.setTimeTakenMinutes(elapsedMinutes);
+        attempt.setTimeTakenMinutes(elapsedSeconds);
         
+        long elapsedMinutes = elapsedSeconds / 60;
         if (elapsedMinutes > quiz.getDuration()) {
             attempt.setExceededTimeLimit(true);
             System.out.println("Warning: Quiz submitted after time limit. Elapsed: " + elapsedMinutes + " minutes, Allowed: " + quiz.getDuration() + " minutes");
@@ -149,7 +152,7 @@ public class CandidateService {
                 .collect(Collectors.toList());
     }
 
-    public AttemptResponse getAttemptResult(Long attemptId, String candidateEmail) {
+    public DetailedAttemptResponse getAttemptResult(Long attemptId, String candidateEmail) {
         QuizAttempt attempt = attemptRepository.findById(attemptId)
                 .orElseThrow(() -> new ResourceNotFoundException("QuizAttempt", attemptId));
 
@@ -157,7 +160,7 @@ public class CandidateService {
             throw new RuntimeException("Unauthorized");
         }
 
-        return toAttemptResponse(attempt);
+        return toDetailedAttemptResponse(attempt);
     }
 
     private QuizSummaryResponse toSummaryResponse(Quiz quiz) {
@@ -212,6 +215,79 @@ public class CandidateService {
                 attempt.getStatus().name(),
                 attempt.getTimeTakenMinutes(),
                 attempt.getExceededTimeLimit()
+        );
+    }
+
+    private DetailedAttemptResponse toDetailedAttemptResponse(QuizAttempt attempt) {
+        Quiz quiz = attempt.getQuiz();
+        
+        List<QuestionResponse> questions = quiz.getQuestions().stream()
+                .map(q -> new QuestionResponse(
+                        q.getId(),
+                        q.getQuestionText(),
+                        q.getType().name(),
+                        q.getPoints(),
+                        q.getOptions().stream()
+                                .map(o -> new OptionResponse(o.getId(), o.getOptionText(), o.getIsCorrect()))
+                                .collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+
+        QuizResponse quizResponse = new QuizResponse(
+                quiz.getId(),
+                quiz.getTitle(),
+                quiz.getDescription(),
+                quiz.getDuration(),
+                quiz.getIsActive(),
+                quiz.getCreatedBy().getName(),
+                quiz.getCreatedAt(),
+                quiz.getUpdatedAt(),
+                questions
+        );
+
+        List<CandidateAnswerResponse> candidateAnswers = attempt.getAnswers().stream()
+                .map(ans -> {
+                    Question q = ans.getQuestion();
+                    QuestionResponse qResp = new QuestionResponse(
+                            q.getId(),
+                            q.getQuestionText(),
+                            q.getType().name(),
+                            q.getPoints(),
+                            q.getOptions().stream()
+                                    .map(o -> new OptionResponse(o.getId(), o.getOptionText(), o.getIsCorrect()))
+                                    .collect(Collectors.toList())
+                    );
+                    
+                    OptionResponse selectedOpt = null;
+                    if (ans.getSelectedOption() != null) {
+                        Option opt = ans.getSelectedOption();
+                        selectedOpt = new OptionResponse(opt.getId(), opt.getOptionText(), opt.getIsCorrect());
+                    }
+                    
+                    return new CandidateAnswerResponse(
+                            ans.getId(),
+                            qResp,
+                            selectedOpt,
+                            ans.getTextAnswer(),
+                            ans.getIsCorrect(),
+                            ans.getPointsEarned()
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return new DetailedAttemptResponse(
+                attempt.getId(),
+                quiz.getId(),
+                quiz.getTitle(),
+                attempt.getStartedAt(),
+                attempt.getSubmittedAt(),
+                attempt.getScore(),
+                attempt.getTotalPoints(),
+                attempt.getStatus().name(),
+                attempt.getTimeTakenMinutes(),
+                attempt.getExceededTimeLimit(),
+                quizResponse,
+                candidateAnswers
         );
     }
 }
