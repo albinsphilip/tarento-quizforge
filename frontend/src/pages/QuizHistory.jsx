@@ -119,8 +119,8 @@ function QuizHistory() {
                           </td>
                           <td className="px-6 py-4">
                             {attempt.submittedAt ? (
-                              <span className={`badge ${percentage >= 70 ? 'badge-success' : 'badge-danger'}`}>
-                                {percentage >= 70 ? 'Passed' : 'Failed'}
+                              <span className={`badge ${percentage >= 70 ? 'badge-success' : percentage>=50 ? 'badge-warning' : 'badge-danger'}`}>
+                                {percentage >= 70 ? 'Good' : percentage>=50? 'Needs Improvement' : 'Failed'}
                               </span>
                             ) : (
                               <span className="badge bg-red-100 text-red-800">Aborted</span>

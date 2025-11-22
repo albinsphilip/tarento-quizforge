@@ -1,4 +1,4 @@
-const LoadingSpinner = ({ message = 'Loading...', size = 'md' }) => {
+const LoadingSpinner = ({ message = 'Loading...', size = 'lg' }) => {
   const sizeClasses = {
     sm: 'h-8 w-8',
     md: 'h-12 w-12',

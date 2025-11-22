@@ -9,6 +9,7 @@ export default {
 export const Default = {
   args: {
     message: 'Loading...',
+    size: {}
   },
 };
 
@@ -22,4 +23,13 @@ export const ShortMessage = {
   args: {
     message: 'Please wait',
   },
+};
+
+export const Md = {
+  args: {
+    message: "Please wait",
+    size: {
+      "'sm'": ""
+    }
+  }
 };

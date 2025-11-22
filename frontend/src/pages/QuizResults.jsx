@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { quizAPI } from '../utils/api';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function QuizResults() {
   const { attemptId } = useParams();
@@ -41,18 +42,26 @@ function QuizResults() {
 
   const getStatusText = () => {
     const percentage = getScorePercentage();
-    if (percentage >= 70) return 'Passed';
-    if (percentage >= 50) return 'Average';
+    if (percentage >= 70) return 'Good';
+    if (percentage >= 50) return 'Needs Improvement';
     return 'Failed';
   };
 
-  if (loading) {
-    return (
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+  //         <p className="mt-4 text-slate-600">Loading results...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+
+  if(loading){
+    return(
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600">Loading results...</p>
-        </div>
+        <LoadingSpinner message="Loading results..."/>
       </div>
     );
   }
@@ -106,12 +115,12 @@ function QuizResults() {
               </button>
               <h1 className="text-lg font-semibold text-gray-900">Quiz Results</h1>
             </div>
-            <button
+            {/* <button
               onClick={() => navigate('/candidate')}
               className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 font-medium text-sm"
             >
               Back to Dashboard
-            </button>
+            </button> */}
           </div>
         </div>
       </header>
@@ -213,7 +222,7 @@ function QuizResults() {
                   : 'text-rose-800'
               }`}>
                 {percentage >= 70 
-                  ? '🎉 Excellent! You passed with flying colors!' 
+                  ? '🎉 Excellent! Keep going!' 
                   : percentage >= 50 
                   ? '👍 Good effort! Keep practicing to improve.' 
                   : '💪 Don\'t give up! Review the material and try again.'}
@@ -221,128 +230,6 @@ function QuizResults() {
             </div>
           </div>
         </div>
-
-        {/* Question Review (if available) */}
-        {attempt.quiz?.questions && attempt.quiz.questions.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">
-              Question Review
-            </h3>
-            <p className="text-slate-600 text-sm mb-4">
-              Total Questions: {attempt.quiz.questions.length}
-            </p>
-            
-            {/* Question list */}
-            <div className="space-y-4">
-              {attempt.quiz.questions.map((question, index) => {
-                // Find the user's answer for this question
-                const userAnswer = attempt.candidateAnswers?.find(
-                  ans => ans.question?.id === question.id
-                );
-                
-                // Determine if answer is correct
-                const isCorrect = userAnswer?.correct;
-
-                return (
-                  <div
-                    key={question.id}
-                    className={`border-2 rounded-lg p-4 ${
-                      isCorrect === true
-                        ? 'border-emerald-200 bg-emerald-50'
-                        : isCorrect === false
-                        ? 'border-rose-200 bg-rose-50'
-                        : 'border-slate-200 bg-slate-50'
-                    }`}
-                  >
-                    <div className="flex items-start">
-                      <span className={`mr-3 mt-0.5 material-symbols-outlined text-xl ${
-                        isCorrect === true
-                          ? 'text-emerald-600'
-                          : isCorrect === false
-                          ? 'text-rose-600'
-                          : 'text-slate-400'
-                      }`}>
-                        {isCorrect === true
-                          ? 'check_circle'
-                          : isCorrect === false
-                          ? 'cancel'
-                          : 'help'}
-                      </span>
-                      <div className="flex-1">
-                        <p className="font-semibold text-slate-900 mb-2 text-sm">
-                          {index + 1}. {question.questionText}
-                        </p>
-                        
-                        {/* MCQ/True-False Options */}
-                        {(question.questionType === 'MCQ' || question.questionType === 'TRUE_FALSE') && (
-                          <div className="space-y-2 mt-3">
-                            {question.options?.map((option) => {
-                              const isUserSelection = userAnswer?.selectedOption?.id === option.id;
-                              const isCorrectOption = option.correct;
-
-                              return (
-                                <div
-                                  key={option.id}
-                                  className={`p-2 rounded ${
-                                    isCorrectOption
-                                      ? 'bg-green-100 border border-green-300'
-                                      : isUserSelection && !isCorrectOption
-                                      ? 'bg-red-100 border border-red-300'
-                                      : 'bg-white border border-gray-200'
-                                  }`}
-                                >
-                                  <div className="flex items-center">
-                                    {isCorrectOption && (
-                                      <span className="material-symbols-outlined text-green-600 mr-2 text-sm">
-                                        check
-                                      </span>
-                                    )}
-                                    {isUserSelection && !isCorrectOption && (
-                                      <span className="material-symbols-outlined text-red-600 mr-2 text-sm">
-                                        close
-                                      </span>
-                                    )}
-                                    <span className={
-                                      isCorrectOption || isUserSelection
-                                        ? 'font-semibold'
-                                        : ''
-                                    }>
-                                      {option.optionText}
-                                    </span>
-                                    {isUserSelection && (
-                                      <span className="ml-2 text-sm text-gray-600">
-                                        (Your answer)
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-
-                        {/* Short Answer */}
-                        {question.questionType === 'SHORT_ANSWER' && (
-                          <div className="mt-3">
-                            <p className="text-sm text-gray-600 mb-1">Your Answer:</p>
-                            <p className="p-2 bg-white border border-gray-200 rounded">
-                              {userAnswer?.textAnswer || '(No answer provided)'}
-                            </p>
-                            {userAnswer?.textAnswer && (
-                              <p className="text-sm text-gray-500 mt-2">
-                                * Short answer questions require manual grading
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
 
         {/* Action Buttons */}
         {/* <div className="mt-8 flex justify-center space-x-4">
