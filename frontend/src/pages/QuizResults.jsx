@@ -35,15 +35,13 @@ function QuizResults() {
 
   const getStatusColor = () => {
     const percentage = getScorePercentage();
-    if (percentage >= 70) return 'text-green-600';
-    if (percentage >= 50) return 'text-yellow-600';
+    if (percentage >= 50) return 'text-green-600';
     return 'text-red-600';
   };
 
   const getStatusText = () => {
     const percentage = getScorePercentage();
-    if (percentage >= 70) return 'Good';
-    if (percentage >= 50) return 'Needs Improvement';
+    if (percentage >= 50) return 'Passed';
     return 'Failed';
   };
 
@@ -155,7 +153,7 @@ function QuizResults() {
                     cx="96"
                     cy="96"
                     r="88"
-                    stroke={percentage >= 70 ? '#10b981' : percentage >= 50 ? '#f59e0b' : '#ef4444'}
+                    stroke={percentage >= 50 ? '#10b981' : '#ef4444'}
                     strokeWidth="12"
                     fill="none"
                     strokeDasharray={`${2 * Math.PI * 88}`}
@@ -208,23 +206,17 @@ function QuizResults() {
               </div>
             </div>            {/* Performance Message */}
             <div className={`p-4 rounded-lg ${
-              percentage >= 70 
+              percentage >= 50 
                 ? 'bg-emerald-50 border border-emerald-200' 
-                : percentage >= 50 
-                ? 'bg-amber-50 border border-amber-200' 
                 : 'bg-rose-50 border border-rose-200'
             }`}>
               <p className={`font-semibold text-sm ${
-                percentage >= 70 
+                percentage >= 50 
                   ? 'text-emerald-800' 
-                  : percentage >= 50 
-                  ? 'text-amber-800' 
                   : 'text-rose-800'
               }`}>
-                {percentage >= 70 
-                  ? '🎉 Excellent! Keep going!' 
-                  : percentage >= 50 
-                  ? '👍 Good effort! Keep practicing to improve.' 
+                {percentage >= 50 
+                  ? '🎉 Congratulations! You passed!' 
                   : '💪 Don\'t give up! Review the material and try again.'}
               </p>
             </div>

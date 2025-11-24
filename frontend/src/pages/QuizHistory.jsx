@@ -105,9 +105,9 @@ function QuizHistory() {
                           <td className="px-6 py-4">
                             {attempt.submittedAt ? (
                               <div className="flex items-center gap-2">
-                                <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                  <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
                                   <div 
-                                    className={`h-full transition-all ${percentage >= 70 ? 'bg-green-500' : 'bg-red-500'}`}
+                                    className={`h-full transition-all ${percentage >= 50 ? 'bg-green-500' : 'bg-red-500'}`}
                                     style={{ width: `${percentage}%` }}
                                   ></div>
                                 </div>
@@ -119,8 +119,8 @@ function QuizHistory() {
                           </td>
                           <td className="px-6 py-4">
                             {attempt.submittedAt ? (
-                              <span className={`badge ${percentage >= 70 ? 'badge-success' : percentage>=50 ? 'badge-warning' : 'badge-danger'}`}>
-                                {percentage >= 70 ? 'Good' : percentage>=50? 'Needs Improvement' : 'Failed'}
+                              <span className={`badge ${percentage >= 50 ? 'badge-success' : 'badge-danger'}`}>
+                                {percentage >= 50 ? 'Passed' : 'Failed'}
                               </span>
                             ) : (
                               <span className="badge bg-red-100 text-red-800">Aborted</span>

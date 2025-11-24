@@ -224,7 +224,6 @@ const QuizForm = ({ initialData, onSubmit, submitLabel, disabled = false }) => {
                   >
                     <option value="MULTIPLE_CHOICE">Multiple Choice</option>
                     <option value="TRUE_FALSE">True/False</option>
-                    <option value="SHORT_ANSWER">Short Answer</option>
                   </select>
                 </div>
                 <div>

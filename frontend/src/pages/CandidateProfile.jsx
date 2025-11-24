@@ -133,7 +133,7 @@ const CandidateProfile = () => {
                       const percentage = attempt.totalPoints > 0 
                         ? Math.round((attempt.score / attempt.totalPoints) * 100) 
                         : 0;
-                      const passed = percentage >= 70;
+                      const passed = percentage >= 50;
                       
                       return (
                         <div key={attempt.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">

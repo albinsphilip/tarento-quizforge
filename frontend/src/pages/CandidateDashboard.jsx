@@ -45,7 +45,7 @@ function CandidateDashboard() {
       const avgScore = attempts.length > 0 
         ? Math.round(attempts.reduce((sum, a) => sum + (a.totalPoints > 0 ? (a.score / a.totalPoints) * 100 : 0), 0) / attempts.length)
         : 0;
-      const passed = attempts.filter(a => a.totalPoints > 0 && (a.score / a.totalPoints) * 100 >= 70).length;
+      const passed = attempts.filter(a => a.totalPoints > 0 && (a.score / a.totalPoints) * 100 >= 50).length;
       
       setStats({ completed, avgScore, passed });
     } catch (error) {
