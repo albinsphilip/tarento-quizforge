@@ -38,7 +38,7 @@ const CandidateProfile = () => {
   const avgScore = totalQuizzes > 0 
     ? Math.round(attempts.reduce((sum, a) => sum + (a.totalPoints > 0 ? (a.score / a.totalPoints) * 100 : 0), 0) / totalQuizzes)
     : 0;
-  const passedQuizzes = attempts.filter(a => a.totalPoints > 0 && (a.score / a.totalPoints) * 100 >= 70).length;
+  const passedQuizzes = attempts.filter(a => a.totalPoints > 0 && (a.score / a.totalPoints) * 100 >= 50).length;
   const totalPoints = attempts.reduce((sum, a) => sum + a.score, 0);
 
   return (
@@ -62,8 +62,8 @@ const CandidateProfile = () => {
                 <span className="text-4xl font-bold">{user?.name?.charAt(0)?.toUpperCase() || 'C'}</span>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-900 mb-2">{user?.name?.split(' ')[0] || 'Candidate'}</h2>
-                <p className="text-slate-600 text-sm">{user?.email}</p>
+                <h2 className="text-xl font-bold text-slate-900">{user?.name?.split(' ')[0] || 'Candidate'}</h2>
+                {/* <p className="text-slate-600 text-sm">{user?.email}</p> */}
                 {/*<span className="inline-block mt-2 badge badge-info">Candidate</span>*/}
               </div>
             </div>
