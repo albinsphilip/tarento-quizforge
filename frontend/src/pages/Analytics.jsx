@@ -74,7 +74,7 @@ function Analytics() {
       ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
       : 0;
     
-    const passedAttempts = scores.filter(score => score >= 70).length;
+    const passedAttempts = scores.filter(score => score >= 50).length;
     const passRate = totalAttempts > 0 
       ? Math.round((passedAttempts / totalAttempts) * 100)
       : 0;
@@ -367,7 +367,7 @@ function Analytics() {
                         const percentage = attempt.totalPoints > 0 
                           ? Math.round((attempt.score / attempt.totalPoints) * 100)
                           : 0;
-                        const isPassed = percentage >= 70;
+                        const isPassed = percentage >= 50;
                         
                         return (
                           <tr key={attempt.id} className="hover:bg-gray-50 transition-colors">

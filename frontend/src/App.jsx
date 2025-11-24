@@ -20,7 +20,7 @@ function App() {
         <Route path="/candidate/quiz/:quizId" element={<QuizTaking />} />
         <Route path="/candidate/results/:attemptId" element={<QuizResults />} />
         <Route path="/candidate/*" element={<CandidateDashboard />} />
-        <Route path="/candidate/history" element={<QuizHistory/>}/> //not yet created
+        <Route path="/candidate/history" element={<QuizHistory/>}/>
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/quiz/create" element={<CreateQuiz />} />
