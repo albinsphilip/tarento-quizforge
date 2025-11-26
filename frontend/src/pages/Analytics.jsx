@@ -108,10 +108,8 @@ function Analytics() {
   };
 
   const getScoreDistribution = () => {
-    let filteredAttempts = attempts;
-    if (selectedQuiz !== 'all') {
-      filteredAttempts = attempts.filter(a => a.quizId === parseInt(selectedQuiz));
-    }
+    // Always filter by selected quiz
+    const filteredAttempts = attempts.filter(a => a.quizId === parseInt(selectedQuiz));
 
     const ranges = [
       { label: '0-20%', min: 0, max: 20, count: 0 },
@@ -122,7 +120,7 @@ function Analytics() {
     ];
 
     filteredAttempts.forEach(a => {
-      const percentage = a.totalPoints > 0 ? (a.score / a.totalPoints) * 100 : 0;
+      const percentage = Math.round(a.totalPoints > 0 ? (a.score / a.totalPoints) * 100 : 0);
       const range = ranges.find(r => percentage >= r.min && percentage <= r.max);
       if (range) range.count++;
     });
@@ -131,16 +129,14 @@ function Analytics() {
   };
 
   const getTopPerformers = () => {
-    let filteredAttempts = attempts;
-    if (selectedQuiz !== 'all') {
-      filteredAttempts = attempts.filter(a => a.quizId === parseInt(selectedQuiz));
-    }
+    // Always filter by selected quiz
+    const filteredAttempts = attempts.filter(a => a.quizId === parseInt(selectedQuiz));
 
     const candidateScores = {};
     
     filteredAttempts.forEach(a => {
       const email = a.candidateEmail;
-      const percentage = a.totalPoints > 0 ? (a.score / a.totalPoints) * 100 : 0;
+      const percentage = Math.round(a.totalPoints > 0 ? (a.score / a.totalPoints) * 100 : 0);
       
       if (!candidateScores[email]) {
         candidateScores[email] = {

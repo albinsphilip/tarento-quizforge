@@ -121,7 +121,7 @@ function Login() {
 
         {/* Footer */}
         <p className="text-center text-xs text-gray-500 mt-6">
-          &copy; {new Date().getFullYear()} QuizForge. All rights reserved.
+          &copy; {new Date().getFullYear()}. All rights reserved.
         </p>
       </div>
     </div>

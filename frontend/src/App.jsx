@@ -9,6 +9,7 @@ import EditQuiz from './pages/EditQuiz'
 import CandidateProfile from './pages/CandidateProfile'
 import QuizHistory from './pages/QuizHistory'
 import Analytics from './pages/Analytics'
+import NotFound from './pages/NotFound'
 
 function App() {
   return (
@@ -19,14 +20,12 @@ function App() {
         <Route path="/candidate/profile" element={<CandidateProfile />} />
         <Route path="/candidate/quiz/:quizId" element={<QuizTaking />} />
         <Route path="/candidate/results/:attemptId" element={<QuizResults />} />
-        <Route path="/candidate/*" element={<CandidateDashboard />} />
         <Route path="/candidate/history" element={<QuizHistory/>}/>
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/quiz/create" element={<CreateQuiz />} />
         <Route path="/admin/quiz/edit/:quizId" element={<EditQuiz />} />
-        <Route path="/admin/*" element={<AdminDashboard />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   )
